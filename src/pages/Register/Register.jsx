@@ -1,38 +1,43 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./style.css";
-import request from "../../utils/request.js";
+import request from "../../configs/request.js";
 
 function Register() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [cpassword, setCpassword] = useState("");
-
-  const handleSubmit = (e) => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    cpassword: "",
+  });
+  const navigate = useNavigate();
+  const handleChange = (event) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [event.target.name]: event.target.value,
+    }));
+  };
+  const onSubmit = (e) => {
     e.preventDefault();
-    if (password !== cpassword) {
+    if (formData.password !== formData.cpassword) {
       alert("Password and confirm password are not the same");
       return;
     }
-    register();
-  };
-
-  const register = () => {
     request
-      .post("/auth/register", {
-        username: username,
-        email: email,
-        password: password,
+      .post("/api/v1/auth/register", formData)
+      .then((res) => {
+        if (res.data.err === 0) {
+          alert(res.data.mes);
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
+        }
+        if (res.data.err === 1) {
+          alert(res.data.mes);
+        }
       })
-      .then((response) => {
-        console.log(response);
-        alert(response.data.message);
-        // if (response.data.message === "success") {
-        //   setTimeout(() => {
-        //     window.location.href = "/";
-        //   }, 1000);
-        // }
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -40,13 +45,13 @@ function Register() {
     <div className="login template d-flex justify-content-center align-items-center w-100 h-100">
       <div className="form-sign-up rounded m-2 border border-2 border-primary">
         <h1 className="text-center">Register</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <div className="mb-2 form-floating">
             <input
               type="text"
               placeholder=""
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              name="username"
+              onChange={handleChange}
               className="form-control"
               required
             />
@@ -56,8 +61,8 @@ function Register() {
             <input
               type="email"
               placeholder=""
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              onChange={handleChange}
               className="form-control"
               required
             />
@@ -67,8 +72,8 @@ function Register() {
             <input
               type="password"
               placeholder=""
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              onChange={handleChange}
               className="form-control"
               required
             />
@@ -78,8 +83,8 @@ function Register() {
             <input
               type="password"
               placeholder=""
-              value={cpassword}
-              onChange={(e) => setCpassword(e.target.value)}
+              name="cpassword"
+              onChange={handleChange}
               className="form-control"
               required
             />
