@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 
 function JobItem({ job }) {
-  const { jobTitle, jobCompany, jobSalary, jobLocation } = job;
+  // const { jobTitle, jobCompany, jobSalary, jobLocation } = job;
+  let jobTitle = job.vi_tri;
+  let jobCompany = job.employerData.ten_cong_ty;
+  let jobSalary = job.salaryData.value;
+  let jobLocation = job.provinceData.value;
+  let logoCompany = job.employerData.logo_cong_ty;
 
   return (
     <div className="d-flex job-item border mb-3 p-2">
@@ -10,7 +15,11 @@ function JobItem({ job }) {
           <img
             className="img-fluid rounded"
             alt="..."
-            src="https://timviec.com.vn/default/images/logo_company_80x80.png"
+            src={
+              logoCompany
+                ? logoCompany
+                : "https://timviec.com.vn/default/images/logo_company_80x80.png"
+            }
             style={{ width: "80px", height: "80px" }}
           />
         </Link>

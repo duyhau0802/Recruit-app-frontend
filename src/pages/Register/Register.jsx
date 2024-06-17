@@ -24,7 +24,7 @@ function Register() {
       return;
     }
     request
-      .post("/api/v1/auth/register", formData)
+      .post("/api/auth/register", formData)
       .then((res) => {
         if (res.data.err === 0) {
           alert(res.data.mes);

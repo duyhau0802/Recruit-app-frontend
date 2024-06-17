@@ -18,14 +18,19 @@ function Login() {
   const onSubmit = (e) => {
     e.preventDefault();
     request
-      .post("/api/v1/auth/login", formData)
+      .post("/api/auth/login", formData)
       .then((res) => {
-        alert(res.data.mes);
+        // alert(res.data.mes);
+        setAlertVariant("success"); // Set alert type to success
+        setAlertMessage(res.data.mes); // Set alert message from response
+        setShowAlert(true); // Show the alert
+
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("username", res.data.username);
         localStorage.setItem("refresh_token", res.data.refresh_token);
         setTimeout(() => {
           navigate("/", { state: { token: res.data.access_token } });
+          window.location.reload();
         }, 1000);
       })
       .catch((err) => {
@@ -33,6 +38,10 @@ function Login() {
         console.log(err);
       });
   };
+  const [showAlert, setShowAlert] = useState(false); // State for alert visibility
+  const [alertVariant, setAlertVariant] = useState("success"); // State for alert type
+  const [alertMessage, setAlertMessage] = useState(""); // State for alert message
+
   return (
     <div className="login template d-flex justify-content-center align-items-center w-100 h-100">
       <div className="form-sign-up rounded m-2 border border-2 border-primary">

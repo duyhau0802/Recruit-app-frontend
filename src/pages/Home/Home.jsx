@@ -2,20 +2,47 @@
 import "./Home.css";
 import request from "../../configs/request.js";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import JobItem from "./JobItem.jsx";
 function Home() {
   const [dataJobs, setDataJobs] = useState([]);
+  const [dataProvince, setDataProvince] = useState([]);
+  const [dataSalary, setDataSalary] = useState([]);
   useEffect(() => {
-    request
-      .get("/api/job")
-      .then((res) => {
-        setDataJobs(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    console.log(dataJobs);
-  }, [dataJobs]);
+    const fetchJobData = async () => {
+      await request
+        .get("/api/job")
+        .then((res) => {
+          setDataJobs(res.data.jobData.rows);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const fetchProvinceData = async () => {
+      await request
+        .get("/api/province")
+        .then((res) => {
+          setDataProvince(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    const fetchSalaryData = async () => {
+      await request
+        .get("/api/salary")
+        .then((res) => {
+          setDataSalary(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    fetchJobData();
+    fetchProvinceData();
+    fetchSalaryData();
+  }, []);
   const jobs = [
     {
       jobTitle: "Frontend Developer",
@@ -66,29 +93,28 @@ function Home() {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Mã hóa cho web"
+                placeholder="lập trình viên"
                 id="jobDescription"
               />
-              <span className="input-group-text" id="basic-addon1">
+              <span className="input-group-text ms-3" id="basic-addon1">
                 Địa điểm
               </span>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Hà Nội"
-                id="location"
-              />
-              <span className="input-group-text" id="basic-addon1">
-                Tiêu chuẩn lương
+              <select className="form-select">
+                <option value="0">Tất cả</option>
+                {dataProvince.map((provinces, index) => (
+                  <option value={index + 1}>{provinces.value}</option>
+                ))}
+              </select>
+              <span className="input-group-text ms-3" id="basic-addon1">
+                Lương
               </span>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="3-5 triệu"
-                id="salary"
-              />
+              <select className="form-select">
+                {dataSalary.map((salary, index) => (
+                  <option value={index + 1}>{salary.value}</option>
+                ))}
+              </select>
               <button
-                className="btn btn-outline-secondary"
+                className="btn btn-primary ms-3"
                 type="button"
                 id="button-addon2"
               >
@@ -100,19 +126,13 @@ function Home() {
         </div>
         <div className="row mb-5">
           <div className="col">
-            <div className="banner card" style={{ color: "white" }}>
+            <div className="">
               <img
-                src={"./images/banner.png"}
-                style={{ height: "200px", width: "100%" }}
+                src={"./images/Recruit-App/banner_doc_quyen.jpg"}
+                style={{ height: "170px", width: "100%", objectFit: "cover" }}
                 alt="banner_img"
+                className="img-fluid"
               />
-              <div className="banner-content card-body card-img-overlay">
-                <h3 className="card-title">Việc làm tốt nhất </h3>
-                <div className="card-text">
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Quod, quibusdam.
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -121,33 +141,42 @@ function Home() {
             <h2 className="mb-4">Các công việc mới nhất</h2>
 
             <div>
-              {jobs.map((job) => (
-                <JobItem key={job.id} job={job} /> // Pass the job object as a prop
+              {dataJobs.map((job, index) => (
+                <JobItem key={index} job={job} /> // Pass the job object as a prop
               ))}
             </div>
-            {/* <div className="job-list card p-4">
-              <div className="row">
-                {jobs.map((job) => (
-                  <JobCard
-                    key={job.jobTitle}
-                    jobTitle={job.jobTitle}
-                    jobDescription={job.jobDescription}
-                    jobCompany={job.jobCompany}
-                    jobSalary={job.jobSalary}
-                    jobLocation={job.jobLocation}
-                  />
-                ))}
-              </div> */}
-
-            {/* </div> */}
           </div>
-          {/* <div className="col col-4 mt-2">
-            <div className="job-list card p-4">This is ad</div>
-          </div> */}
         </div>
-        <div className="job-container-header">Xem tất cả : page 1, page 2</div>
 
-        <div className="jobs-pagation">Đây là phần phân trang</div>
+        <div className="jobs-pagation">
+          <ul class="pagination">
+            <li class="page-item">
+              <Link class="page-link" href="#">
+                Previous
+              </Link>
+            </li>
+            <li class="page-item">
+              <Link class="page-link" href="#">
+                1
+              </Link>
+            </li>
+            <li class="page-item active">
+              <Link class="page-link" href="#">
+                2
+              </Link>
+            </li>
+            <li class="page-item">
+              <Link class="page-link" href="#">
+                3
+              </Link>
+            </li>
+            <li class="page-item">
+              <Link class="page-link" href="#">
+                Next
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
