@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import "./style.css";
 import request from "../../configs/request.js";
 import { Link, useNavigate } from "react-router-dom";
+import AlertComponent from "../../components/AlertComponent.jsx";
 
 function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertVariant, setAlertVariant] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
   const handleChange = (event) => {
     setFormData((prevState) => ({
@@ -21,13 +25,12 @@ function Login() {
       .post("/api/auth/login", formData)
       .then((res) => {
         // alert(res.data.mes);
-        setAlertVariant("success"); // Set alert type to success
+        setAlertVariant("success"); // Set alert type to success (or adjust)
         setAlertMessage(res.data.mes); // Set alert message from response
-        setShowAlert(true); // Show the alert
-
+        setShowAlert(true);
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("username", res.data.username);
-        localStorage.setItem("refresh_token", res.data.refresh_token);
+        localStorage.setItem("user_id", res.data.userId);
         setTimeout(() => {
           navigate("/", { state: { token: res.data.access_token } });
           window.location.reload();
@@ -38,9 +41,6 @@ function Login() {
         console.log(err);
       });
   };
-  const [showAlert, setShowAlert] = useState(false); // State for alert visibility
-  const [alertVariant, setAlertVariant] = useState("success"); // State for alert type
-  const [alertMessage, setAlertMessage] = useState(""); // State for alert message
 
   return (
     <div className="login template d-flex justify-content-center align-items-center w-100 h-100">
@@ -78,6 +78,9 @@ function Login() {
             </p>
           </div>
         </form>
+        {showAlert && (
+          <AlertComponent variant={alertVariant} message={alertMessage} />
+        )}
       </div>
     </div>
   );

@@ -2,27 +2,39 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import request from "../../configs/request.js";
 
-const DegreeList = () => {
+const JobList = () => {
   const [data, setData] = useState([]);
   const [deleted, setDeleted] = useState(true);
-
+  const employerId = localStorage.getItem("user_id");
+  const formatDay = (unformattedDate) => {
+    const dateObject = new Date(unformattedDate);
+    // Extract components
+    const year = dateObject.getFullYear();
+    const month = dateObject.getMonth() + 1; //getMonth() returns 0-based index
+    const day = dateObject.getDate();
+    // Format the date for MySQL
+    const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day
+      .toString()
+      .padStart(2, "0")}`;
+    return formattedDate;
+  };
   useEffect(() => {
     if (deleted) {
       setDeleted(false);
     }
     request
-      .get("/api/degree")
+      .get(`/api/job/list/${employerId}`)
       .then((res) => {
         setData(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [deleted]);
+  }, [deleted, employerId]);
 
   const handleDelete = (id) => {
     request
-      .delete(`/api/degree/${id}`)
+      .delete(`/api/job/${id}`)
       .then((res) => {
         setDeleted(true);
       })
@@ -32,23 +44,23 @@ const DegreeList = () => {
   };
 
   return (
-    <div className="container mb-5 bg-light shadow-sm p-3 me-3">
-      <h3 className="text-center mt-3 fw-bold ">Degree list</h3>
-
-      <div className="row d-flex justify-content-center">
-        <Link className="btn btn-success w-25 mt-4" to="./create">
-          Add Degree
-        </Link>
-      </div>
+    <div className="container">
+      <h3 className="text-center mt-3 fw-bold ">Job list</h3>
       <div className="d-flex justify-content-center mt-3">
-        <div className=" w-75">
+        <div className=" w-100">
           <div className="table-responsive">
             <table className="table table-striped table-bordered">
               <thead>
                 <tr>
                   <th>STT</th>
-                  <th>Code</th>
-                  <th>Value</th>
+                  <th>Vị trí</th>
+                  <th>Số lượng</th>
+                  <th>Job type</th>
+                  <th>Salary</th>
+                  <th>Province</th>
+                  <th>Job field</th>
+                  <th>deadline</th>
+                  <th>create at</th>
                   <th className="text-center">Action</th>
                 </tr>
               </thead>
@@ -57,12 +69,18 @@ const DegreeList = () => {
                   return (
                     <tr key={item.id}>
                       <td>{index + 1}</td>
-                      <td>{item.code}</td>
-                      <td>{item.value}</td>
-                      <td className="d-flex justify-content-center gap-3">
+                      <td>{item.vi_tri}</td>
+                      <td>{item.so_luong}</td>
+                      <td>{item.job_type_code}</td>
+                      <td>{item.salary_code}</td>
+                      <td>{item.province_cong_viec}</td>
+                      <td>{item.job_field_code}</td>
+                      <td>{formatDay(item.deadline)}</td>
+                      <td>{formatDay(item.createdAt)}</td>
+                      <td className="d-flex justify-content-center">
                         <Link
                           className="btn btn-primary"
-                          to={`./update/${item.id}`}
+                          to={`../update/${item.id}`}
                         >
                           Update
                         </Link>
@@ -85,4 +103,4 @@ const DegreeList = () => {
   );
 };
 
-export default DegreeList;
+export default JobList;

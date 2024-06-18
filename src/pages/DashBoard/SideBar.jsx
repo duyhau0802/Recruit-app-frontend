@@ -12,6 +12,31 @@ function SideBar() {
           <li className="list-group-item list-group-item-action">
             <NavLink
               className="text-decoration-none text-black"
+              to="/dashboard/account"
+            >
+              Quản lý tài khoản
+            </NavLink>
+          </li>
+          {/* role employer */}
+          <li className="list-group-item list-group-item-action">
+            <NavLink
+              className="text-decoration-none text-black"
+              to="/dashboard/job/create"
+            >
+              Đăng tin
+            </NavLink>
+          </li>
+          <li className="list-group-item list-group-item-action">
+            <NavLink
+              className="text-decoration-none text-black"
+              to="/dashboard/job/list"
+            >
+              Tin đã đăng
+            </NavLink>
+          </li>
+          <li className="list-group-item list-group-item-action">
+            <NavLink
+              className="text-decoration-none text-black"
               to="/dashboard/degree"
             >
               Degree

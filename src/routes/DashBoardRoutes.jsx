@@ -5,6 +5,7 @@ import ProvinceRoutes from "./ProvinceRoutes.jsx";
 import SalaryRoutes from "./SalaryRoutes.jsx";
 import JobTypeRoutes from "./JobTypeRoutes.jsx";
 import JobFieldRoutes from "./JobFieldRoutes.jsx";
+import JobRoutes from "./JobRoutes.jsx";
 
 import DashBoardHome from "../pages/DashBoard/DashBoardHome";
 
@@ -24,6 +25,7 @@ export default function DashBoardRoutes() {
               <Route path="/salary/*" element={<SalaryRoutes />} />
               <Route path="/job-type/*" element={<JobTypeRoutes />} />
               <Route path="/job-field/*" element={<JobFieldRoutes />} />
+              <Route path="/job/*" element={<JobRoutes />} />
             </Route>
           </Routes>
         </div>

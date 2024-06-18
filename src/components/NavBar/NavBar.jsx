@@ -4,16 +4,13 @@ import "./style.css";
 
 function NavBar() {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState("dark");
-  const auth = localStorage.getItem("access_token");
+  const token = localStorage.getItem("access_token");
   // bear ....
   const username = localStorage.getItem("username");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const location = useLocation();
   useEffect(
-    (auth) => {
-      // Your side effect logic here
-      if (auth) {
+    (token) => {
+      if (token) {
         setIsLoggedIn(true);
         window.location.reload();
       }
@@ -28,7 +25,7 @@ function NavBar() {
   };
   return (
     <>
-      <nav className={`navbar navbar-expand-md navbar-${theme} bg-${theme}`}>
+      <nav className={`navbar navbar-expand-md navbar-dark bg-dark`}>
         <div className="container">
           <Link className="navbar-brand" to="/">
             Recruit App
@@ -44,7 +41,7 @@ function NavBar() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse ms-5" id="nav">
-            <ul className="navbar-nav text-end pe-3">
+            {/* <ul className="navbar-nav text-end pe-3">
               <li className="nav-item" key={"co-hoi-viec-lam"}>
                 <NavLink className="nav-link" to="/co-hoi-viec-lam">
                   Cơ hội việc làm
@@ -55,22 +52,22 @@ function NavBar() {
                   Danh sách công ty
                 </NavLink>
               </li>
-            </ul>
+            </ul> */}
 
-            {auth ? (
+            {token ? (
               <>
                 <ul className="navbar-nav ms-auto text-end pe-3">
-                  <div class="dropdown mt-2">
+                  <div className="dropdown mt-2">
                     <Link
                       data-bs-toggle="dropdown"
                       style={{
                         textDecoration: "none",
-                        color: "rgba(255,255,255,.55)",
+                        color: "rgba(255,255,255,.80)",
                       }}
                     >
                       {username}🔽
                     </Link>
-                    <ul class="dropdown-menu">
+                    <ul className="dropdown-menu">
                       <li>
                         <NavLink className="dropdown-item" to="/dashboard">
                           Dashboard

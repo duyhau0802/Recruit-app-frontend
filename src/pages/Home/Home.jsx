@@ -1,5 +1,3 @@
-// import JobCard from "./JobCard.jsx";
-import "./Home.css";
 import request from "../../configs/request.js";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -43,29 +41,29 @@ function Home() {
     fetchProvinceData();
     fetchSalaryData();
   }, []);
-  const jobs = [
-    {
-      jobTitle: "Frontend Developer",
-      jobDescription: "Mã hóa cho web",
-      jobCompany: "Google",
-      jobSalary: "1500$/tháng",
-      jobLocation: "Hà Nội",
-    },
-    {
-      jobTitle: "Backend Developer",
-      jobDescription: "Mã hóa cho web",
-      jobCompany: "Amazon",
-      jobSalary: "1800$/tháng",
-      jobLocation: "Hà Nội",
-    },
-    {
-      jobTitle: "Fullstack Developer",
-      jobDescription: "Mã hóa cho web",
-      jobCompany: "Facebook",
-      jobSalary: "2000$/tháng",
-      jobLocation: "Hà Nội",
-    },
-  ];
+  // const jobs = [
+  //   {
+  //     jobTitle: "Frontend Developer",
+  //     jobDescription: "Mã hóa cho web",
+  //     jobCompany: "Google",
+  //     jobSalary: "1500$/tháng",
+  //     jobLocation: "Hà Nội",
+  //   },
+  //   {
+  //     jobTitle: "Backend Developer",
+  //     jobDescription: "Mã hóa cho web",
+  //     jobCompany: "Amazon",
+  //     jobSalary: "1800$/tháng",
+  //     jobLocation: "Hà Nội",
+  //   },
+  //   {
+  //     jobTitle: "Fullstack Developer",
+  //     jobDescription: "Mã hóa cho web",
+  //     jobCompany: "Facebook",
+  //     jobSalary: "2000$/tháng",
+  //     jobLocation: "Hà Nội",
+  //   },
+  // ];
   return (
     <div
       className="container-theme"
@@ -102,7 +100,9 @@ function Home() {
               <select className="form-select">
                 <option value="0">Tất cả</option>
                 {dataProvince.map((provinces, index) => (
-                  <option value={index + 1}>{provinces.value}</option>
+                  <option key={index} value={index + 1}>
+                    {provinces.value}
+                  </option>
                 ))}
               </select>
               <span className="input-group-text ms-3" id="basic-addon1">
@@ -110,7 +110,9 @@ function Home() {
               </span>
               <select className="form-select">
                 {dataSalary.map((salary, index) => (
-                  <option value={index + 1}>{salary.value}</option>
+                  <option key={index} value={index + 1}>
+                    {salary.value}
+                  </option>
                 ))}
               </select>
               <button
@@ -149,29 +151,29 @@ function Home() {
         </div>
 
         <div className="jobs-pagation">
-          <ul class="pagination">
-            <li class="page-item">
-              <Link class="page-link" href="#">
+          <ul className="pagination">
+            <li className="page-item">
+              <Link className="page-link" href="#">
                 Previous
               </Link>
             </li>
-            <li class="page-item">
-              <Link class="page-link" href="#">
+            <li className="page-item">
+              <Link className="page-link" href="#">
                 1
               </Link>
             </li>
-            <li class="page-item active">
-              <Link class="page-link" href="#">
+            <li className="page-item active">
+              <Link className="page-link" href="#">
                 2
               </Link>
             </li>
-            <li class="page-item">
-              <Link class="page-link" href="#">
+            <li className="page-item">
+              <Link className="page-link" href="#">
                 3
               </Link>
             </li>
-            <li class="page-item">
-              <Link class="page-link" href="#">
+            <li className="page-item">
+              <Link className="page-link" href="#">
                 Next
               </Link>
             </li>

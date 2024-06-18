@@ -3,29 +3,24 @@ import { useState } from "react";
 import request from "../../configs/request";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const CreateJob = () => {
+const UpdateJob = () => {
+  const [formData, setFormData] = useState({});
+  const { id } = useParams();
+  useEffect(() => {
+    request
+      .get(`/api/job/${id}`)
+      .then((res) => {
+        setFormData(res.data);
+      })
+      .catch((err) => {
+        console.log("Error fetching data", err);
+      });
+  }, [id]);
+
   const [startDate, setStartDate] = useState(new Date());
   const navigate = useNavigate();
-  const userId = localStorage.getItem("user_id");
-  const [formData, setFormData] = useState({
-    vi_tri: "",
-    so_luong: "1",
-    job_type_code: "FT",
-    salary_code: "0",
-    province_cong_viec: "HN",
-    address_cong_viec: "",
-    job_field_code: "IT",
-    mo_ta: "",
-    quyen_loi: "",
-    degree_code: "C3",
-    kinh_nghiem: "0",
-    yeu_cau_cong_viec: "",
-    yeu_cau_ho_so: "",
-    deadline: "2024-06-30 00:00:00",
-    id_employer: userId,
-  });
 
   const formatDay = (unformattedDate) => {
     const dateObject = new Date(unformattedDate);
@@ -118,10 +113,10 @@ const CreateJob = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     request
-      .post("/api/job", formData)
+      .put(`/api/job/${id}`, formData)
       .then((res) => {
         setTimeout(() => {
-          alert("Thêm công việc thành công");
+          alert("Cập nhật công việc thành công");
           navigate(-1);
         }, 200);
       })
@@ -144,6 +139,7 @@ const CreateJob = () => {
               name="vi_tri"
               id="vi_tri"
               onChange={handleChange}
+              defaultValue={formData.vi_tri}
               placeholder="VD: nhân viên kinh doanh"
               className="form-control form-control-sm"
               required
@@ -161,7 +157,7 @@ const CreateJob = () => {
                   id="so_luong"
                   onChange={handleChange}
                   className="form-control form-control-sm"
-                  defaultValue={1}
+                  defaultValue={formData.so_luong}
                   required
                 />
               </div>
@@ -174,6 +170,7 @@ const CreateJob = () => {
                   id="job_type_code"
                   name="job_type_code"
                   onChange={handleChange}
+                  defaultValue={formData.job_type_code}
                   required
                 >
                   {dataJobType.map((item, index) => (
@@ -192,6 +189,7 @@ const CreateJob = () => {
                   type="text"
                   id="address_cong_viec"
                   name="address_cong_viec"
+                  defaultValue={formData.address_cong_viec}
                   className="form-control form-control-sm"
                   placeholder="VD: 432 ql 9"
                   required
@@ -207,6 +205,7 @@ const CreateJob = () => {
                   className="form-select form-select-sm"
                   id="salary_code"
                   name="salary_code"
+                  defaultValue={formData.salary_code}
                   onChange={handleChange}
                   required
                 >
@@ -225,6 +224,7 @@ const CreateJob = () => {
                   className="form-select form-select-sm"
                   id="job_field_code"
                   name="job_field_code"
+                  defaultValue={formData.job_field_code}
                   onChange={handleChange}
                   required
                 >
@@ -243,6 +243,7 @@ const CreateJob = () => {
                 <select
                   className="form-select form-select-sm"
                   id="province_cong_viec"
+                  defaultValue={formData.province_cong_viec}
                   name="province_cong_viec"
                   onChange={handleChange}
                   required
@@ -262,6 +263,7 @@ const CreateJob = () => {
               <textarea
                 onChange={handleChange}
                 className="form-control h-100"
+                defaultValue={formData.mo_ta}
                 name="mo_ta"
                 id="mo_ta"
                 placeholder="VD: 
@@ -278,6 +280,7 @@ const CreateJob = () => {
                 onChange={handleChange}
                 className="form-control h-100 fs-6"
                 name="quyen_loi"
+                defaultValue={formData.quyen_loi}
                 id="quyen_loi"
                 placeholder="VD: 
                 - Thời gian làm việc :...
@@ -295,6 +298,7 @@ const CreateJob = () => {
                 className="form-select form-select-sm"
                 id="kinh_nghiem"
                 name="kinh_nghiem"
+                defaultValue={formData.kinh_nghiem}
                 onChange={handleChange}
                 required
               >
@@ -314,6 +318,7 @@ const CreateJob = () => {
                     className="form-select form-select-sm"
                     id="degree_code"
                     name="degree_code"
+                    defaultValue={formData.degree_code}
                     onChange={handleChange}
                     required
                   >
@@ -333,6 +338,7 @@ const CreateJob = () => {
                   <DatePicker
                     selected={startDate}
                     id="deadline"
+                    defaultValue={formData.deadline}
                     className="form-control form-control-sm"
                     onChange={(date) => {
                       setStartDate(date);
@@ -353,6 +359,7 @@ const CreateJob = () => {
                   className="form-control h-100"
                   name="yeu_cau_cong_viec"
                   id="yeu_cau_cong_viec"
+                  defaultValue={formData.yeu_cau_cong_viec}
                   onChange={handleChange}
                   placeholder="VD: 
                 - Có kinh nghiệm là 1 lợi thế
@@ -369,6 +376,7 @@ const CreateJob = () => {
                   className="form-control h-100"
                   name="yeu_cau_ho_so"
                   id="yeu_cau_ho_so"
+                  defaultValue={formData.yeu_cau_ho_so}
                   placeholder="VD: 
                 - Đơn xin việc :...
                 - Chứng minh nhân dân
@@ -385,7 +393,7 @@ const CreateJob = () => {
               Hủy bỏ
             </button>
             <button type="submit" className="btn btn-primary mt-4 me-5 mt-5">
-              Đăng tuyển{" "}
+              Cập nhật
             </button>
           </div>
         </form>
@@ -394,4 +402,4 @@ const CreateJob = () => {
   );
 };
 
-export default CreateJob;
+export default UpdateJob;

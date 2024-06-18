@@ -14,7 +14,6 @@ const Footer = () => {
           color: "white",
           minHeight: "50px",
         }}
-        className="fixed-bottom"
       >
         This is Footer
       </div>
