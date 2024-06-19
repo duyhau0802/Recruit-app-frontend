@@ -1,14 +1,12 @@
 import { Link } from "react-router-dom";
-import formatDay from "../../utils/formatDay.js";
 
-function JobItem({ job }) {
+function JobItem(job) {
   // const { jobTitle, jobCompany, jobSalary, jobLocation } = job;
   let jobTitle = job.vi_tri;
   let jobCompany = job.employerData.ten_cong_ty;
   let jobSalary = job.salaryData.value;
   let jobLocation = job.provinceData.value;
   let logoCompany = job.employerData.logo_cong_ty;
-  let jobDeadline = job.deadline;
 
   return (
     <div className="d-flex job-item border mb-3 p-2">
@@ -42,7 +40,7 @@ function JobItem({ job }) {
             <span className="text-muted">Khu vực: </span>
             <span className="font-weight-bold">{jobLocation}</span>
           </div>
-          <span className="text-muted">Hạn nộp: {formatDay(jobDeadline)}</span>
+          <span className="text-muted">Hạn nộp: 09/07/2024</span>
         </div>
       </div>
       <div className="d-flex align-items-center ">

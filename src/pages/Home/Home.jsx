@@ -6,6 +6,17 @@ function Home() {
   const [dataJobs, setDataJobs] = useState([]);
   const [dataProvince, setDataProvince] = useState([]);
   const [dataSalary, setDataSalary] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    province_cong_viec: "",
+    salary_code: "",
+  });
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
   useEffect(() => {
     const fetchJobData = async () => {
       await request
@@ -41,29 +52,9 @@ function Home() {
     fetchProvinceData();
     fetchSalaryData();
   }, []);
-  // const jobs = [
-  //   {
-  //     jobTitle: "Frontend Developer",
-  //     jobDescription: "Mã hóa cho web",
-  //     jobCompany: "Google",
-  //     jobSalary: "1500$/tháng",
-  //     jobLocation: "Hà Nội",
-  //   },
-  //   {
-  //     jobTitle: "Backend Developer",
-  //     jobDescription: "Mã hóa cho web",
-  //     jobCompany: "Amazon",
-  //     jobSalary: "1800$/tháng",
-  //     jobLocation: "Hà Nội",
-  //   },
-  //   {
-  //     jobTitle: "Fullstack Developer",
-  //     jobDescription: "Mã hóa cho web",
-  //     jobCompany: "Facebook",
-  //     jobSalary: "2000$/tháng",
-  //     jobLocation: "Hà Nội",
-  //   },
-  // ];
+  const timKiem = () => {
+    console.log(formData);
+  };
   return (
     <div
       className="container-theme"
@@ -83,21 +74,23 @@ function Home() {
       >
         <div className="row">
           <h4>Tìm việc làm nhanh</h4>
-          <div className="">
+          <form onSubmit={timKiem}>
             <div className="input-group mb-3">
-              <span className="input-group-text" id="basic-addon1">
-                Việc làm
-              </span>
+              <span className="input-group-text">Việc làm</span>
               <input
                 type="text"
                 className="form-control"
                 placeholder="lập trình viên"
-                id="jobDescription"
+                id="name"
+                name="name"
+                onChange={handleChange}
               />
-              <span className="input-group-text ms-3" id="basic-addon1">
-                Địa điểm
-              </span>
-              <select className="form-select">
+              <span className="input-group-text ms-3">Địa điểm</span>
+              <select
+                className="form-select"
+                name="province_cong_viec"
+                onChange={handleChange}
+              >
                 <option value="0">Tất cả</option>
                 {dataProvince.map((provinces, index) => (
                   <option key={index} value={index + 1}>
@@ -105,32 +98,30 @@ function Home() {
                   </option>
                 ))}
               </select>
-              <span className="input-group-text ms-3" id="basic-addon1">
-                Lương
-              </span>
-              <select className="form-select">
+              <span className="input-group-text ms-3">Lương</span>
+              <select
+                className="form-select"
+                name="salary_code"
+                onChange={handleChange}
+              >
                 {dataSalary.map((salary, index) => (
                   <option key={index} value={index + 1}>
                     {salary.value}
                   </option>
                 ))}
               </select>
-              <button
-                className="btn btn-primary ms-3"
-                type="button"
-                id="button-addon2"
-              >
+              <button className="btn btn-primary ms-3" type="submit">
                 Tìm kiếm
               </button>
               <div className="input-group mb-3"></div>
             </div>
-          </div>
+          </form>
         </div>
         <div className="row mb-5">
           <div className="col">
             <div className="">
               <img
-                src={"./images/Recruit-App/banner_doc_quyen.jpg"}
+                src={"/images/Recruit_App/banner_doc_quyen.png"}
                 style={{ height: "170px", width: "100%", objectFit: "cover" }}
                 alt="banner_img"
                 className="img-fluid"
@@ -141,16 +132,14 @@ function Home() {
         <div className="row">
           <div className="col">
             <h2 className="mb-4">Các công việc mới nhất</h2>
-
             <div>
               {dataJobs.map((job, index) => (
-                <JobItem key={index} job={job} /> // Pass the job object as a prop
+                <JobItem key={index} job={job} />
               ))}
             </div>
           </div>
         </div>
-
-        <div className="jobs-pagation">
+        <div className="jobs-pagation d-flex justify-content-center">
           <ul className="pagination">
             <li className="page-item">
               <Link className="page-link" href="#">

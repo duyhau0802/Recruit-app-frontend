@@ -34,6 +34,7 @@ function SideBar() {
               Tin đã đăng
             </NavLink>
           </li>
+          {/* role admin */}
           <li className="list-group-item list-group-item-action">
             <NavLink
               className="text-decoration-none text-black"
@@ -42,7 +43,6 @@ function SideBar() {
               Degree
             </NavLink>
           </li>
-          {/* Add more sidebar items here */}
           <li className="list-group-item list-group-item-action">
             <NavLink
               className="text-decoration-none text-black"

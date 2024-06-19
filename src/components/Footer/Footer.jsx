@@ -8,14 +8,17 @@ const Footer = () => {
           position: "fix",
           bottom: "0",
           width: "100%",
-          height: "20px",
+          height: "15px",
           textAlign: "center",
           backgroundColor: "black",
           color: "white",
-          minHeight: "50px",
+          minHeight: "20px",
         }}
+        className="fixed-bottom"
       >
-        This is Footer
+        <footer>
+          <p> © 2024. Copyright by Nguyen Duy Hau</p>
+        </footer>
       </div>
     </>
   );

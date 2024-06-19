@@ -4,12 +4,14 @@ import "./style.css";
 import request from "../../configs/request.js";
 import AlertComponent from "../../components/AlertComponent.jsx";
 
-function Register() {
+function RegisterEmployer() {
+  const [cpassword, setCpassword] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-    cpassword: "",
+    ten_cong_ty: "",
+    address_cong_ty: "",
   });
   const [showAlert, setShowAlert] = useState(false);
   const [alertVariant, setAlertVariant] = useState("");
@@ -23,15 +25,15 @@ function Register() {
   };
   const onSubmit = (e) => {
     e.preventDefault();
-    if (formData.password !== formData.cpassword) {
+    if (formData.password !== cpassword) {
       alert("Password and confirm password are not the same");
       return;
     }
     request
       .post("/api/auth/register", formData)
       .then((res) => {
-        setAlertVariant("success"); // Set alert type to success (or adjust)
-        setAlertMessage(res.data.mes); // Set alert message from response
+        setAlertVariant("success");
+        setAlertMessage(res.data.mes);
         setShowAlert(true);
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("username", res.data.username);
@@ -56,7 +58,7 @@ function Register() {
       <div className="d-flex justify-content-center w-100 h-100">
         <div className="col-4 p-5 ps-5 pe-5 rounded-5 m-2 border border-2 shadow mt-2">
           <h3 className="text-center mt-3 mb-4 fw-bold">
-            Register for Applicant
+            Register for Employer
           </h3>
           <form onSubmit={onSubmit}>
             <div className="mb-2">
@@ -98,6 +100,28 @@ function Register() {
                 type="password"
                 placeholder=""
                 name="cpassword"
+                onChange={(e) => setCpassword(e.target.value)}
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="mb-2">
+              <label htmlFor="ten_cong_ty">Tên công ty</label>
+              <input
+                type="text"
+                placeholder=""
+                name="ten_cong_ty"
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+            <div className="mb-2">
+              <label htmlFor="address_cong_ty">Địa chỉ công ty</label>
+              <input
+                type="text"
+                placeholder=""
+                name="address_cong_ty"
                 onChange={handleChange}
                 className="form-control"
                 required
@@ -118,4 +142,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default RegisterEmployer;

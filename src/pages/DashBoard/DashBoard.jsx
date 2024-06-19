@@ -37,7 +37,6 @@ const Dashboard = () => {
         </div>
 
         <div className="col md-10 p-3">
-          {/* Your main content goes here */}
           <p>Your main content</p>
           <Routes>
             <Route path="dashboard/degree/*" element={<DegreeList />} />

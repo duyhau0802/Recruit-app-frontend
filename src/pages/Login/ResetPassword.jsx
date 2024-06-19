@@ -1,18 +1,14 @@
 import React, { useState } from "react";
 import "./style.css";
 import request from "../../configs/request.js";
-import { Link, useNavigate } from "react-router-dom";
-import AlertComponent from "../../components/AlertComponent.jsx";
+import { Link, useParams } from "react-router-dom";
 
-function Login() {
+function ResetPassword() {
   const [formData, setFormData] = useState({
-    email: "",
     password: "",
+    cpassword: "",
   });
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertVariant, setAlertVariant] = useState("");
-  const [alertMessage, setAlertMessage] = useState("");
-  const navigate = useNavigate();
+  const token = useParams();
   const handleChange = (event) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -21,20 +17,14 @@ function Login() {
   };
   const onSubmit = (e) => {
     e.preventDefault();
+    if (formData.password !== formData.cpassword) {
+      alert("Password and confirm password are not the same");
+      return;
+    }
     request
-      .post("/api/auth/login", formData)
+      .post(`/api/auth/password-reset/${token}`, formData)
       .then((res) => {
-        setAlertVariant("success");
-        setAlertMessage(res.data.mes);
-        setShowAlert(true);
-        localStorage.setItem("access_token", res.data.access_token);
-        localStorage.setItem("username", res.data.username);
-        localStorage.setItem("user_id", res.data.userId);
-        localStorage.setItem("user_role", res.data.role_code);
-        setTimeout(() => {
-          navigate("/", { state: { token: res.data.access_token } });
-          window.location.reload();
-        }, 1000);
+        alert("Reset successful");
       })
       .catch((err) => {
         alert("Something went wrong");
@@ -53,22 +43,11 @@ function Login() {
             style={{ width: "100px", height: "80px" }}
           />
         </div>
-        <h3 className="text-center mt-3 fw-bold">Login to Recruit App</h3>
+        <h3 className="text-center mt-3 fw-bold">Set new password ? </h3>
+        <p className="text-center mt-2">Enter your new pass</p>
         <form onSubmit={onSubmit}>
           <div className="mb-2 mt-4">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              placeholder=""
-              name="email"
-              onChange={handleChange}
-              className="form-control"
-              required
-            />
-          </div>
-          <div className="mb-2 mt-2">
             <label htmlFor="password">Password</label>
-
             <input
               type="password"
               placeholder=""
@@ -78,21 +57,26 @@ function Login() {
               required
             />
           </div>
+          <div className="mb-2 mt-4">
+            <label htmlFor="cpassword">Confirm Password</label>
+            <input
+              type="cpassword"
+              placeholder=""
+              name="cpassword"
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
           <div className="d-grid">
             <button type="submit" className="btn btn-success mb-2">
               Submit
             </button>
-            <p className="text-center mt-2">
-              <Link to="/reset-password">Quên mật khẩu</Link>
-            </p>
           </div>
         </form>
-        {showAlert && (
-          <AlertComponent variant={alertVariant} message={alertMessage} />
-        )}
       </div>
     </div>
   );
 }
 
-export default Login;
+export default ResetPassword;

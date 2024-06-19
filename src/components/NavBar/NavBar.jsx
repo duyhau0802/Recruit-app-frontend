@@ -28,7 +28,13 @@ function NavBar() {
       <nav className={`navbar navbar-expand-md navbar-dark bg-dark`}>
         <div className="container">
           <Link className="navbar-brand" to="/">
-            Recruit App
+            <img
+              src={"/images/Recruit_App/logo.png"}
+              alt=""
+              className="img-fluid rounded-2 me-2"
+              style={{ width: "50px", height: "40px" }}
+            />
+            <div className="d-inline logo-name fw-bold pt-5">Recruit App</div>
           </Link>
           <button
             className="navbar-toggler"
@@ -41,19 +47,6 @@ function NavBar() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse ms-5" id="nav">
-            {/* <ul className="navbar-nav text-end pe-3">
-              <li className="nav-item" key={"co-hoi-viec-lam"}>
-                <NavLink className="nav-link" to="/co-hoi-viec-lam">
-                  Cơ hội việc làm
-                </NavLink>
-              </li>
-              <li className="nav-item" key={"danh-sach-cong-ty"}>
-                <NavLink className="nav-link" to="/danh-sach-cong-ty">
-                  Danh sách công ty
-                </NavLink>
-              </li>
-            </ul> */}
-
             {token ? (
               <>
                 <ul className="navbar-nav ms-auto text-end pe-3">
@@ -98,7 +91,11 @@ function NavBar() {
                     Register
                   </NavLink>
                 </li>
-                <li className="nav-item" key={"theme"}></li>
+                <li className="nav-item" key={"registerEmployer"}>
+                  <NavLink className="nav-link" to="/registerEmployer">
+                    Register as Employer
+                  </NavLink>
+                </li>
               </ul>
               // <></>
             )}
