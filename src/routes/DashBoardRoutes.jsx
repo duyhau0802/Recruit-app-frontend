@@ -7,6 +7,9 @@ import JobTypeRoutes from "./JobTypeRoutes.jsx";
 import JobFieldRoutes from "./JobFieldRoutes.jsx";
 import AccountRoutes from "./AccountRoutes.jsx";
 import JobRoutes from "./JobRoutes.jsx";
+import ResumeRoutes from "./ResumeRoutes.jsx";
+import ApplicationRoutes from "./ApplicationRoutes.jsx";
+import UserRoutes from "./UserRoutes.jsx";
 
 export default function DashBoardRoutes() {
   return (
@@ -26,6 +29,9 @@ export default function DashBoardRoutes() {
               <Route path="/job-field/*" element={<JobFieldRoutes />} />
               <Route path="/job/*" element={<JobRoutes />} />
               <Route path="/account/*" element={<AccountRoutes />} />
+              <Route path="/resume/*" element={<ResumeRoutes />} />
+              <Route path="/application/*" element={<ApplicationRoutes />} />
+              <Route path="/user/*" element={<UserRoutes />} />
             </Route>
           </Routes>
         </div>
