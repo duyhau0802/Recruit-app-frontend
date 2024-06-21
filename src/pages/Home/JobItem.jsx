@@ -47,7 +47,7 @@ function JobItem({ job }) {
       </div>
       <div className="d-flex align-items-center ">
         <Link className="btn btn-primary btn-sm me-4" to={"/job/" + job.id}>
-          Ứng tuyển
+          Chi tiết
         </Link>
         <Link className="btn btn-success btn-sm">Ưa thích</Link>
       </div>

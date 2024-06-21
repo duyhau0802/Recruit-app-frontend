@@ -2,7 +2,30 @@ import request from "../../configs/request.js";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import JobItem from "./JobItem.jsx";
+import ReactPaginate from "react-paginate";
+
 function Home() {
+  // pagination
+  const [totalJob, setTotalJob] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchJobData = async (page) => {
+    await request
+      .get(`/api/job?page=${page}&limit=2`)
+      .then((res) => {
+        setDataJobs(res.data.jobData.rows);
+        setTotalPages(res.data.total_pages);
+        setTotalJob(res.data.total);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handlePageClick = (event) => {
+    fetchJobData(+event.selected + 1);
+  };
+
   const [dataJobs, setDataJobs] = useState([]);
   const [dataProvince, setDataProvince] = useState([]);
   const [dataSalary, setDataSalary] = useState([]);
@@ -18,16 +41,6 @@ function Home() {
     });
   };
   useEffect(() => {
-    const fetchJobData = async () => {
-      await request
-        .get("/api/job")
-        .then((res) => {
-          setDataJobs(res.data.jobData.rows);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
     const fetchProvinceData = async () => {
       await request
         .get("/api/province")
@@ -48,7 +61,7 @@ function Home() {
           console.log(err);
         });
     };
-    fetchJobData();
+    fetchJobData(1);
     fetchProvinceData();
     fetchSalaryData();
   }, []);
@@ -140,33 +153,26 @@ function Home() {
           </div>
         </div>
         <div className="jobs-pagation d-flex justify-content-center">
-          <ul className="pagination">
-            <li className="page-item">
-              <Link className="page-link" href="#">
-                Previous
-              </Link>
-            </li>
-            <li className="page-item">
-              <Link className="page-link" href="#">
-                1
-              </Link>
-            </li>
-            <li className="page-item active">
-              <Link className="page-link" href="#">
-                2
-              </Link>
-            </li>
-            <li className="page-item">
-              <Link className="page-link" href="#">
-                3
-              </Link>
-            </li>
-            <li className="page-item">
-              <Link className="page-link" href="#">
-                Next
-              </Link>
-            </li>
-          </ul>
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel="next >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={totalPages}
+            previousLabel="< previous"
+            renderOnZeroPageCount={null}
+            marginPagesDisplayed={2}
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousClassName="page-item"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            containerClassName="pagination"
+            activeClassName="active"
+          />
         </div>
       </div>
     </div>

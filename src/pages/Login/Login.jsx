@@ -10,7 +10,6 @@ function Login() {
     password: "",
   });
   const [showAlert, setShowAlert] = useState(false);
-  const [alertVariant, setAlertVariant] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
   const handleChange = (event) => {
@@ -24,7 +23,6 @@ function Login() {
     request
       .post("/api/auth/login", formData)
       .then((res) => {
-        setAlertVariant("success");
         setAlertMessage(res.data.mes);
         setShowAlert(true);
         localStorage.setItem("access_token", res.data.access_token);
@@ -44,6 +42,7 @@ function Login() {
 
   return (
     <div className="d-flex justify-content-center w-100 h-100">
+      {showAlert && <AlertComponent message={alertMessage} />}
       <div className="col-4 p-5 ps-5 pe-5 rounded-5 m-2 border border-2 shadow mt-3">
         <div className="d-flex justify-content-center ">
           <img
@@ -87,9 +86,6 @@ function Login() {
             </p>
           </div>
         </form>
-        {showAlert && (
-          <AlertComponent variant={alertVariant} message={alertMessage} />
-        )}
       </div>
     </div>
   );

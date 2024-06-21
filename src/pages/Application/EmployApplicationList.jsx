@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import request from "../../configs/request.js";
+import formatDay from "../../utils/formatDay";
 
 const EmployApplicationList = () => {
   const [data, setData] = useState([]);
   const [deleted, setDeleted] = useState(true);
   const user_id = localStorage.getItem("user_id");
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+    console.log(selectedOption);
+  };
+
   useEffect(() => {
     if (deleted) {
       setDeleted(false);
     }
-
     request
-      .get(`/api/application/${user_id}`)
+      .get(`/api/application/employer/${user_id}`)
       .then((res) => {
         setData(res.data);
       })
@@ -23,7 +30,7 @@ const EmployApplicationList = () => {
 
   const handleDelete = (id) => {
     request
-      .delete(`/api/resume/${id}`)
+      .delete(`/api/application/${id}`)
       .then((res) => {
         setDeleted(true);
       })
@@ -31,15 +38,33 @@ const EmployApplicationList = () => {
         console.log(err);
       });
   };
+  const [formData, setFormData] = useState({});
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
+  const updateStatus = (id) => {
+    const updateData = {
+      status: selectedOption,
+    };
+
+    request
+      .put(`/api/application/${id}`, updateData)
+      .then((res) => {
+        console.log(res);
+        alert("Cập nhật trạng thái thành công");
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Something went wrong");
+      });
+  };
 
   return (
-    <div className="container mb-5 bg-light shadow-sm pt-2 me-3">
-      <h3 className="text-center mt-3 fw-bold ">Resume list</h3>
-      <div className="row d-flex justify-content-center">
-        <Link className="btn btn-success w-25 mt-4" to="./create">
-          Add Resume
-        </Link>
-      </div>
+    <div className="container mb-5 bg-light shadow-sm pt-2  me-3">
+      <h3 className="text-center mt-3 fw-bold ">Application list</h3>
       <div className="d-flex justify-content-center mt-3">
         <div className="w-100">
           <div className="table-responsive">
@@ -47,8 +72,11 @@ const EmployApplicationList = () => {
               <thead>
                 <tr>
                   <th>STT</th>
-                  <th>CV_link</th>
-                  <th>filename</th>
+                  <th>Job</th>
+                  <th>Deadline</th>
+                  <th>Tên ứng viên </th>
+                  <th>Resume</th>
+                  <th>Status</th>
                   <th className="text-center">Action</th>
                 </tr>
               </thead>
@@ -58,15 +86,37 @@ const EmployApplicationList = () => {
                     return (
                       <tr key={item.id}>
                         <td>{index + 1}</td>
-                        <td>{item.cv_link}</td>
-                        <td>{item.file_name}</td>
-                        <td className="d-flex justify-content-center gap-3">
-                          <Link
-                            className="btn btn-primary"
-                            to={`./update/${item.id}`}
-                          >
-                            Update
+                        <td>{item.jobData.vi_tri}</td>
+                        <td>{formatDay(item.jobData.deadline)}</td>
+                        <td>{item.ungVienData.userData.username}</td>
+                        <td>
+                          <Link to={item.resumeData.cv_link}>
+                            <img
+                              src={item.resumeData.cv_link}
+                              style={{ width: "80px", height: "80px" }}
+                            />
                           </Link>
+                        </td>
+                        <td>
+                          <select
+                            name="status"
+                            id="status"
+                            className="form-select form-select"
+                            onChange={handleOptionChange}
+                            defaultValue={item.status}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Accepted">Accepted</option>
+                            <option value="Rejected">Rejected</option>
+                          </select>
+                        </td>
+                        <td className="d-flex justify-content-center gap-3">
+                          <button
+                            className="btn btn-success"
+                            onClick={() => updateStatus(item.id)}
+                          >
+                            Update status
+                          </button>
                           <button
                             className="btn btn-danger"
                             onClick={() => handleDelete(item.id)}

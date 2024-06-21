@@ -11,6 +11,15 @@ const JobDetail = () => {
       setJob(res.data);
     });
   }, [id]);
+  const handleApply = (job_id) => {
+    const data = {
+      user_id: localStorage.getItem("user_id"),
+      job_id: job_id,
+    };
+    request.post(`/api/application/${job_id}`, data).then((res) => {
+      console.log(res);
+    });
+  };
   return (
     <>
       <div className="container d-flex">
@@ -47,12 +56,42 @@ const JobDetail = () => {
             </div>
             <div className="col">
               <div className="">
-                <Link
+                <button
                   className="btn btn-primary btn-sm me-4"
-                  to={"/job/" + job.id}
+                  // onClick={() => handleApply(job?.id)}
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalApply"
                 >
                   Ứng tuyển
-                </Link>
+                </button>
+                <div className="modal fade" id="modalApply">
+                  <div className="modal-dialog">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title fw-bold">Chọn cv của bạn</h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                          data-bs-target="#modalApply"
+                        ></button>
+                      </div>
+                      <div className="modal-body">
+                        <div className="form-group">
+                          <label htmlFor="name">Tên</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="name"
+                            name="name"
+                            placeholder="Nhập tên"
+                          />
+                        </div>
+                      </div>
+                      <div className="modal-footer"></div>
+                    </div>
+                  </div>
+                </div>
                 <Link className="btn btn-success btn-sm">Ưa thích</Link>
                 <div className="row mt-3">
                   Hạn nộp : {formatDay(job.deadline)}
