@@ -38,13 +38,6 @@ const EmployApplicationList = () => {
         console.log(err);
       });
   };
-  const [formData, setFormData] = useState({});
-  const handleChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
-  };
   const updateStatus = (id) => {
     const updateData = {
       status: selectedOption,
@@ -90,9 +83,10 @@ const EmployApplicationList = () => {
                         <td>{formatDay(item.jobData.deadline)}</td>
                         <td>{item.ungVienData.userData.username}</td>
                         <td>
-                          <Link to={item.resumeData.cv_link}>
+                          <Link to={item.resumeData.cv_link} target="_blank">
                             <img
                               src={item.resumeData.cv_link}
+                              alt="resume"
                               style={{ width: "80px", height: "80px" }}
                             />
                           </Link>
@@ -101,7 +95,7 @@ const EmployApplicationList = () => {
                           <select
                             name="status"
                             id="status"
-                            className="form-select form-select"
+                            className="form-select form-select-sm"
                             onChange={handleOptionChange}
                             defaultValue={item.status}
                           >
@@ -109,14 +103,14 @@ const EmployApplicationList = () => {
                             <option value="Accepted">Accepted</option>
                             <option value="Rejected">Rejected</option>
                           </select>
-                        </td>
-                        <td className="d-flex justify-content-center gap-3">
                           <button
-                            className="btn btn-success"
+                            className="btn btn-success btn-sm mt-1 ms-2"
                             onClick={() => updateStatus(item.id)}
                           >
                             Update status
                           </button>
+                        </td>
+                        <td className="d-flex justify-content-center gap-3">
                           <button
                             className="btn btn-danger"
                             onClick={() => handleDelete(item.id)}

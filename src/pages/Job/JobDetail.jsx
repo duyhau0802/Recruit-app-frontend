@@ -6,20 +6,40 @@ import formatDay from "../../utils/formatDay";
 const JobDetail = () => {
   const [job, setJob] = useState({});
   const { id } = useParams();
+  const [selectedCV, setSelectedCV] = useState(null);
+  const [cvData, setCvData] = useState([]);
+
+  const user_id = localStorage.getItem("user_id");
+
+  const handleImageClick = (imageId) => {
+    setSelectedCV(imageId);
+  };
+
   useEffect(() => {
     request.get(`/api/job/${id}`).then((res) => {
       setJob(res.data);
     });
-  }, [id]);
-  const handleApply = (job_id) => {
-    const data = {
-      user_id: localStorage.getItem("user_id"),
-      job_id: job_id,
-    };
-    request.post(`/api/application/${job_id}`, data).then((res) => {
-      console.log(res);
+    request.get(`/api/resume/${user_id}`).then((res) => {
+      setCvData(res.data);
     });
+  }, [id, user_id]);
+
+  const handleApply = () => {
+    const data = {
+      id_user: user_id,
+      id_tin: id,
+      id_resume: selectedCV,
+    };
+    request
+      .post("/api/application", data)
+      .then((res) => {
+        alert("Đăng ký thành công");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+
   return (
     <>
       <div className="container d-flex">
@@ -35,7 +55,7 @@ const JobDetail = () => {
             </div>
           </div>
           <div className="row shadow mt-3 p-3">
-            <h3>Thông tin tổng quan</h3>
+            <h3 className="h3 fw-bold mb-4">Thông tin tổng quan</h3>
             <div className="col-2">
               <img
                 src={
@@ -58,14 +78,13 @@ const JobDetail = () => {
               <div className="">
                 <button
                   className="btn btn-primary btn-sm me-4"
-                  // onClick={() => handleApply(job?.id)}
                   data-bs-toggle="modal"
                   data-bs-target="#modalApply"
                 >
                   Ứng tuyển
                 </button>
-                <div className="modal fade" id="modalApply">
-                  <div className="modal-dialog">
+                <div className="modal fade " id="modalApply">
+                  <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                       <div className="modal-header">
                         <h5 className="modal-title fw-bold">Chọn cv của bạn</h5>
@@ -77,18 +96,55 @@ const JobDetail = () => {
                         ></button>
                       </div>
                       <div className="modal-body">
-                        <div className="form-group">
-                          <label htmlFor="name">Tên</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="name"
-                            name="name"
-                            placeholder="Nhập tên"
-                          />
+                        <div className="image-grid">
+                          <div className="row text-center">
+                            {cvData.map((image) => (
+                              <div className="col" key={image.id}>
+                                <img
+                                  key={image.id}
+                                  src={image.cv_link}
+                                  alt={image.id}
+                                  onClick={() => handleImageClick(image.id)}
+                                  className={
+                                    selectedCV === image.id ? "selected" : ""
+                                  }
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    objectFit: "cover",
+                                    cursor: "pointer",
+                                    backgroundColor:
+                                      selectedCV === image.id ? "#eee" : "", // Apply conditionally
+                                    border:
+                                      selectedCV === image.id
+                                        ? "2px solid red"
+                                        : "none",
+                                  }}
+                                />
+                                <div>
+                                  <Link
+                                    key={image.id}
+                                    to={image.cv_link}
+                                    className="btn btn-primary btn-sm m-2"
+                                    target="_blank"
+                                  >
+                                    Xem
+                                  </Link>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                      <div className="modal-footer"></div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={() => handleApply()}
+                        >
+                          Apply
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -96,12 +152,15 @@ const JobDetail = () => {
                 <div className="row mt-3">
                   Hạn nộp : {formatDay(job.deadline)}
                 </div>
+                <div className="row mt-1">
+                  Người đăng : {job.employerData?.userData.username}
+                </div>
               </div>
             </div>
           </div>
           <div className="row mt-3 mb-3 shadow p-3">
             <div className="col w-100">
-              <h3>Thông tin chi tiết</h3>
+              <h3 className="h3 fw-bold mb-4">Thông tin chi tiết</h3>
               <div className="row">
                 <div className="col">Số lượng tuyển : {job.so_luong} người</div>
                 <div className="col">
@@ -125,7 +184,7 @@ const JobDetail = () => {
           </div>
           <div className={job.mo_ta ? `row mt-1 mb-3 shadow p-3` : `d-none`}>
             <div className="">
-              <h3>Mô tả công việc</h3>
+              <h3 className="h3 fw-bold mb-4">Mô tả công việc</h3>
               <div className="row ">
                 <div className="col" style={{ whiteSpace: "pre-line" }}>
                   {job.mo_ta}
@@ -137,7 +196,7 @@ const JobDetail = () => {
             className={job.quyen_loi ? `row mt-1 mb-3 shadow p-3` : `d-none`}
           >
             <div className="">
-              <h3>Quyền lợi được hưởng</h3>
+              <h3 className="h3 fw-bold mb-4">Quyền lợi được hưởng</h3>
               <div className="row">
                 <div className="col" style={{ whiteSpace: "pre-line" }}>
                   {job.quyen_loi}
@@ -151,7 +210,7 @@ const JobDetail = () => {
             }
           >
             <div className="">
-              <h3>Yêu cầu công việc</h3>
+              <h3 className="h3 fw-bold mb-4">Yêu cầu công việc</h3>
               <div className="row">
                 <div className="col" style={{ whiteSpace: "pre-line" }}>
                   {job.yeu_cau_cong_viec}
@@ -165,7 +224,7 @@ const JobDetail = () => {
             }
           >
             <div className="">
-              <h3>Yêu cầu hồ sơ</h3>
+              <h3 className="h3 fw-bold mb-4">Yêu cầu hồ sơ</h3>
               <div className="row">
                 <div className="col" style={{ whiteSpace: "pre-line" }}>
                   {job.yeu_cau_ho_so}
@@ -175,7 +234,7 @@ const JobDetail = () => {
           </div>
           <div className={`row mt-1 mb-4 shadow p-3`}>
             <div className="">
-              <h3>Sugesstion jobs</h3>
+              <h3 className="h3 fw-bold mb-4">Sugesstion jobs</h3>
               <div className="row">
                 <button className="btn btn-primary">
                   Generate relative jobs

@@ -1,6 +1,7 @@
-import { Link, NavLink, useNavigate, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./style.css";
+import { useNavigate } from "react-router-dom";
 
 function NavBar() {
   const navigate = useNavigate();
@@ -12,16 +13,15 @@ function NavBar() {
     (token) => {
       if (token) {
         setIsLoggedIn(true);
-        window.location.reload();
       }
     },
     [isLoggedIn]
   );
 
   const logout = () => {
-    localStorage.removeItem("access_token");
-    navigate("/");
-    window.location.reload();
+    localStorage.clear();
+    setIsLoggedIn(false);
+    navigate("/login");
   };
   return (
     <>

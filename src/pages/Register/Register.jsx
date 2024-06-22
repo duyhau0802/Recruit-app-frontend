@@ -62,6 +62,7 @@ function Register() {
             <div className="mb-2">
               <label htmlFor="username">Họ và tên</label>
               <input
+                autoFocus
                 type="username"
                 placeholder=""
                 name="username"

@@ -5,7 +5,7 @@ import request from "../../configs/request.js";
 const JobList = () => {
   const [data, setData] = useState([]);
   const [deleted, setDeleted] = useState(true);
-  const employerId = localStorage.getItem("user_id");
+  const user_id = localStorage.getItem("user_id");
   const formatDay = (unformattedDate) => {
     const dateObject = new Date(unformattedDate);
     // Extract components
@@ -23,14 +23,14 @@ const JobList = () => {
       setDeleted(false);
     }
     request
-      .get(`/api/job/list/${employerId}`)
+      .get(`/api/job/list/${user_id}`)
       .then((res) => {
         setData(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [deleted, employerId]);
+  }, [deleted, user_id]);
 
   const handleDelete = (id) => {
     request

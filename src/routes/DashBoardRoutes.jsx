@@ -21,7 +21,7 @@ export default function DashBoardRoutes() {
         <div className="col">
           <Routes>
             <Route>
-              <Route path="/" element={<AccountRoutes />} />
+              <Route path="/*" element={<AccountRoutes />} />
               <Route path="/degree/*" element={<DegreeRoutes />} />
               <Route path="/province/*" element={<ProvinceRoutes />} />
               <Route path="/salary/*" element={<SalaryRoutes />} />

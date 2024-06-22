@@ -62,6 +62,7 @@ function Login() {
               name="email"
               onChange={handleChange}
               className="form-control"
+              autoFocus
               required
             />
           </div>

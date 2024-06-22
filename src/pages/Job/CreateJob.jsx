@@ -24,7 +24,7 @@ const CreateJob = () => {
     yeu_cau_cong_viec: "",
     yeu_cau_ho_so: "",
     deadline: "2024-06-30 00:00:00",
-    id_employer: userId,
+    id_user: userId,
   });
 
   const formatDay = (unformattedDate) => {
