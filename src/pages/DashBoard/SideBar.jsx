@@ -5,25 +5,25 @@ function SideBar() {
   const role = localStorage.getItem("user_role");
   return (
     <div
-      className="d-flex flex-column text-white bg-dark fixed-top col-3"
-      style={{ marginTop: "100px" }}
+      className="d-flex flex-column text-white bg-dark bg-opacity-0 fixed-top col-3"
+      style={{ marginTop: "80px" }}
     >
       <div className="col bg-light p-3 sticky-top">
         <ul className="list-group">
           <li className="list-group-item list-group-item-action bg-dark text-white text-center">
             <h3>Sidebar</h3>
           </li>
-          <li className="list-group-item list-group-item-action">
-            <NavLink
-              className="text-decoration-none text-black d-block w-100 text-center"
-              to="/dashboard/account"
-            >
-              Quản lý tài khoản
-            </NavLink>
-          </li>
           {/* role applicant */}
           {role === "R3" && (
             <>
+              <li className="list-group-item list-group-item-action">
+                <NavLink
+                  className="text-decoration-none text-black d-block w-100 text-center"
+                  to="/dashboard/account"
+                >
+                  Quản lý tài khoản Applicant
+                </NavLink>
+              </li>
               <li className="list-group-item list-group-item-action">
                 <NavLink
                   className="text-decoration-none text-black d-block w-100 text-center"
@@ -53,6 +53,14 @@ function SideBar() {
           {/* role employer */}
           {role === "R2" && (
             <>
+              <li className="list-group-item list-group-item-action">
+                <NavLink
+                  className="text-decoration-none text-black d-block w-100 text-center"
+                  to="/dashboard/account/employer"
+                >
+                  Quản lý tài khoản Employer
+                </NavLink>
+              </li>
               <li className="list-group-item list-group-item-action">
                 <NavLink
                   className="text-decoration-none text-black d-block w-100 text-center"

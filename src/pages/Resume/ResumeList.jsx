@@ -96,19 +96,21 @@ const ResumeList = () => {
                     type="button"
                     className="btn-close"
                     data-bs-dismiss="modal"
-                    data-bs-target="#modalApply"
+                    data-bs-target="#modalAddResume"
                   ></button>
                 </div>
                 <div className="modal-body">
-                  <div className="form-group d-flex">
+                  <div className="form-group d-flex flex-column">
                     <form onSubmit={handleCreateCvSubmit}>
-                      <label htmlFor="cv_link">CV</label>
+                      <label htmlFor="cv_link" className="form-label fw-bold">
+                        CV
+                      </label>
                       <input
                         type="file"
                         className="form-select"
                         onChange={onFileChange}
-                        name="cv_file"
-                        id="cv_file"
+                        name="cv_link"
+                        id="cv_link"
                       />
                       <button
                         type="submit"

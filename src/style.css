@@ -62,3 +62,7 @@ input {
   cursor: pointer;
   width: 280px;
 }
+
+button {
+  box-shadow: none;
+}

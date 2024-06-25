@@ -1,37 +1,27 @@
 import React, { useState, useEffect } from "react";
 import request from "../../configs/request.js";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import formatDay from "../../utils/formatDay";
+import AlertComponent from "../../components/AlertComponent.jsx";
 
 const UpdateAccountApplicant = () => {
-  const userRole = localStorage.getItem("user_role");
-  const userId = localStorage.getItem("user_id");
-  const [dataProvince, setDataProvince] = useState([]);
-  const [dataDegree, setDataDegree] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState("success");
+  const [isSummitSuccessful, setIsSummitSuccessful] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    gioi_tinh: "Nam",
-    ngay_sinh: new Date(),
-    dia_chi: "",
-    province_code: "HCM",
-    sdt: "",
-    // Kinh nghiem thuc te
-    bang_cap_code: "",
-    kinh_nghiem: "",
-    ky_nang: "",
-    // mong muon
-    desire_job_field: "",
-    desire_province: "",
-    desire_job_type: "",
-    desire_salary: "",
-  });
+  const user_id = localStorage.getItem("user_id");
+  const [startDate, setStartDate] = useState(new Date());
+  // fetch applicant data
+
   const [dataJobType, setDataJobType] = useState([]);
   const [dataSalary, setDataSalary] = useState([]);
   const [dataJobField, setDataJobField] = useState([]);
+  const [dataProvince, setDataProvince] = useState([]);
+  const [dataDegree, setDataDegree] = useState([]);
+  // fetch data job_type, degree,...
   useEffect(() => {
     const fetchJobType = async () => {
       await request
@@ -90,16 +80,58 @@ const UpdateAccountApplicant = () => {
     fetchSalaryData();
     fetchJobField();
   }, []);
+  // fetch user data
+  const [userData, setUserData] = useState({
+    username: "",
+    avatar: "",
+    email: "",
+  });
   useEffect(() => {
-    request
-      .get(`/api/user/${userId}`)
-      .then((res) => {
-        setFormData(res.data);
-      })
-      .catch((err) => {
-        console.log("Error fetching data", err);
-      });
-  }, [userId]);
+    const fetchUserData = async (user_id) => {
+      request
+        .get(`/api/user/${user_id}`)
+        .then((res) => {
+          setUserData(res.data);
+        })
+        .catch((err) => {
+          console.log("Error fetching user data", err);
+        });
+    };
+    const fetchApplicantData = async (user_id) => {
+      request
+        .get(`/api/applicant/${user_id}`)
+        .then((res) => {
+          setFormData(res.data);
+        })
+        .catch((err) => {
+          console.log("Error fetching applicant data", err);
+        });
+    };
+    fetchApplicantData(user_id);
+    fetchUserData(user_id);
+    if (isSummitSuccessful) {
+      setIsSummitSuccessful(false);
+    }
+  }, [user_id, isSummitSuccessful]);
+
+  // fetch applicant data
+  const [formData, setFormData] = useState({
+    gioi_tinh: "",
+    ngay_sinh: "",
+    dia_chi: "",
+    province_code: "",
+    sdt: "",
+    // Kinh nghiem thuc te
+    bang_cap_code: "",
+    kinh_nghiem: "",
+    ky_nang: "",
+    // mong muon
+    desire_job_field: "",
+    desire_province: "",
+    desire_job_type: "",
+    desire_salary: "",
+  });
+
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -107,53 +139,218 @@ const UpdateAccountApplicant = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleUserChange = (event) => {
+    setUserData({
+      ...userData,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleResetPassword = async (e) => {
     e.preventDefault();
-    request
-      .put(`/api/user/${userId}`, formData)
+    try {
+      await request
+        .post("/api/auth/password-reset", {
+          email: userData.email,
+        })
+        .then((res) => {
+          setAlertMessage("Check your email to reset your password");
+          setAlertVariant("success");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 2000);
+        });
+    } catch (error) {
+      setAlertMessage("Error deleting user. Please try again.");
+      setAlertVariant("error");
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000);
+    }
+  };
+
+  const handleUpdateUserSubmit = async (event) => {
+    event.preventDefault();
+    const insertData = new FormData();
+    insertData.append("avatar", selectedFile);
+    insertData.append("username", userData.username);
+    insertData.append("user_id", user_id);
+    insertData.append("email", userData.email);
+    await request
+      .put("/api/user", insertData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Required for file uploads
+        },
+      })
       .then((res) => {
-        console.log(res);
-        alert("Cập nhật tài khoản thành công");
+        console.log(res.data);
+        setSelectedFile(null);
+        setIsSummitSuccessful(true);
+        setAlertMessage("Cập nhật tài khoản thành công");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
       })
       .catch((err) => {
-        alert("Something went wrong");
+        alert("Error uploading file");
         console.log(err);
       });
   };
 
+  const handleUpdateApplicantSubmit = async (event) => {
+    event.preventDefault();
+    await request
+      .put(`/api/applicant/${user_id}`, formData)
+      .then((res) => {
+        console.log(res.data);
+        setIsSummitSuccessful(true);
+        setAlertMessage("Cập nhật thông tin chi tiết");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error(err);
+        setAlertMessage("Xảy ra lỗi khi cập nhật thông tin chi tiết.");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
+      });
+  };
+  const navigate = useNavigate();
+  const logout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+  const handleConfirmDeleteAccount = async () => {
+    // delete user
+    try {
+      await request.delete(`/api/user/${user_id}`).then((res) => {
+        setAlertMessage(res.data.mes);
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
+        logout();
+      });
+    } catch (error) {
+      setAlertMessage("Error deleting user. Please try again.");
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000);
+    }
+  };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const onFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  // const handleCheck = (e) => {
+  //   console.log(formData);
+  // };
   return (
     <div className="container d-flex justify-content-center bg-light shadow-sm p-4 me-3 mb-5">
-      <div className="col col-8">
-        <form onSubmit={handleSubmit}>
-          <h4 className="ms-3 fw-bold">THÔNG TIN TÀI KHOẢN</h4>
-          <div>
-            <label htmlFor="username" className="form-label mt-3">
-              Họ và tên
-            </label>
-            <input
-              type="text"
-              name="username"
-              id="username"
-              onChange={handleChange}
-              className="form-control form-control-sm"
-              defaultValue={formData.username}
-              required
-            />
-          </div>
-          <div className="row justify-content-between">
+      {showAlert && (
+        <AlertComponent message={alertMessage} variant={alertVariant} />
+      )}
+      <div className="col col-9">
+        {/* <button onClick={handleCheck}>Check</button> */}
+        <form onSubmit={handleUpdateUserSubmit}>
+          <div className="row justify-content-between shadow p-3 mb-3">
+            <div
+              className="col justify-content-center p-3 mb-3 d-flex flex-column"
+              style={{ alignItems: "center" }}
+            >
+              <img
+                src={
+                  userData.avatar
+                    ? userData.avatar
+                    : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                }
+                alt="avatar"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "50%",
+                }}
+              />
+
+              <button
+                type="button"
+                className="btn btn-success mt-2 btn-sm"
+                style={{ width: "110px" }}
+                data-bs-toggle="modal"
+                data-bs-target="#modalChooseAvatar"
+              >
+                Update avatar
+              </button>
+              {selectedFile && (
+                <p className="mt-1">
+                  New avatar file: {selectedFile.name} <br />{" "}
+                  <strong>Click Cập nhật để đổi avatar</strong>
+                </p>
+              )}
+              {/* 1.modal avatar */}
+              <div className="modal fade " id="modalChooseAvatar">
+                <div className="modal-dialog modal-dialog-centered">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title fw-bold">
+                        Chọn avatar của bạn
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        data-bs-target="#modalChooseAvatar"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <div className="form-group d-flex flex-column">
+                        <label htmlFor="avatar" className="form-label fw-bold">
+                          Avatar
+                        </label>
+                        <input
+                          type="file"
+                          className="form-select"
+                          onChange={onFileChange}
+                          name="avatar"
+                          id="avatar"
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-primary text-center mt-3"
+                          data-bs-dismiss="modal"
+                        >
+                          Chọn
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h4 className="ms-3 fw-bold">THÔNG TIN TÀI KHOẢN</h4>
             <div className="col-5">
               <div>
-                <label htmlFor="email" className="form-label mt-3">
-                  Email
+                <label htmlFor="username" className="form-label mt-3">
+                  Họ và tên
                 </label>
                 <input
                   type="text"
-                  name="email"
-                  id="email"
-                  onChange={handleChange}
+                  name="username"
+                  id="username"
+                  onChange={handleUserChange}
                   className="form-control form-control-sm"
-                  defaultValue={formData.email}
-                  disabled
+                  value={userData.username}
+                  required
                 />
               </div>
             </div>
@@ -166,12 +363,11 @@ const UpdateAccountApplicant = () => {
                   type="text"
                   name="role_code"
                   id="role_code"
-                  onChange={handleChange}
                   className="form-control form-control-sm"
-                  defaultValue={
-                    userRole === "R1"
+                  value={
+                    userData.role_code === "R1"
                       ? "Admin"
-                      : userRole === "R2"
+                      : userData.role_code === "R2"
                       ? "Nhà tuyển dụng"
                       : "Ứng viên"
                   }
@@ -179,8 +375,102 @@ const UpdateAccountApplicant = () => {
                 />
               </div>
             </div>
+            <div className="col-5">
+              <div>
+                <label htmlFor="email" className="form-label mt-3">
+                  Email
+                </label>
+                <input
+                  type="text"
+                  name="email"
+                  id="email"
+                  onChange={handleUserChange}
+                  className="form-control form-control-sm"
+                  value={userData.email}
+                  required
+                />
+              </div>
+            </div>
+            <div className="col-5">
+              <div>
+                <label className="form-label mt-3">Password</label>
+                <br />
+                <div className="text-start">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-warning"
+                    onClick={handleResetPassword}
+                  >
+                    Reset password
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-5 mt-4 text-end">
+              <button
+                type="button"
+                className="btn btn-danger btn-sm"
+                style={{ width: "160px" }}
+                data-bs-toggle="modal"
+                data-bs-target="#modalConfirmDelete"
+              >
+                Xóa tài khoản
+              </button>
+              {/* 2.modal confirm delete */}
+
+              <div className="modal fade" id="modalConfirmDelete">
+                <div className="modal-dialog modal-dialog-centered">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title fw-bold">Confirm Delete</h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        data-bs-target="#modalConfirmDelete"
+                      ></button>
+                    </div>
+                    <div className="modal-body text-center">
+                      Are you sure you want to delete this account?
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                        data-bs-target="#modalConfirmDelete"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={handleConfirmDeleteAccount}
+                        data-bs-dismiss="modal"
+                        data-bs-target="#modalConfirmDelete"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-5 mt-4 ">
+              <button
+                type="submit"
+                className="btn btn-primary btn-sm"
+                style={{ width: "160px" }}
+              >
+                Cập nhật tài khoản
+              </button>
+            </div>
           </div>
-          {/* <div className="row justify-content-between">
+        </form>
+        <form onSubmit={handleUpdateApplicantSubmit}>
+          <div className="row justify-content-between shadow p-3">
+            <h4 className="mt-4 mb-2 ms-3 fw-bold">THÔNG TIN CHI TIẾT</h4>
             <div className="col-5">
               <div>
                 <label htmlFor="gioi_tinh" className="form-label mt-3">
@@ -191,11 +481,11 @@ const UpdateAccountApplicant = () => {
                   name="gioi_tinh"
                   id="gioi_tinh"
                   onChange={handleChange}
-                  className="form-control form-control-sm"
-                  defaultValue={formData.gioi_tinh}
+                  className="form-select form-select-sm"
+                  value={formData?.gioi_tinh ? formData.gioi_tinh : "Nam"}
                 >
-                  <option value="0"> Nam</option>
-                  <option value="1"> Nữ</option>
+                  <option value="Nam"> Nam</option>
+                  <option value="Nữ"> Nữ</option>
                 </select>
               </div>
               <div>
@@ -203,12 +493,12 @@ const UpdateAccountApplicant = () => {
                   Địa chỉ
                 </label>
                 <input
-                  className="form-select form-select-sm"
+                  className="form-control form-control-sm"
                   type="text"
                   id="dia_chi"
                   name="dia_chi"
                   onChange={handleChange}
-                  defaultValue={formData.dia_chi}
+                  value={formData?.dia_chi ? formData.dia_chi : ""}
                 />
               </div>
               <div>
@@ -221,8 +511,7 @@ const UpdateAccountApplicant = () => {
                   id="sdt"
                   name="sdt"
                   className="form-control form-control-sm"
-                  defaultValue={formData.sdt}
-                  required
+                  value={formData?.sdt}
                 />
               </div>
             </div>
@@ -241,7 +530,6 @@ const UpdateAccountApplicant = () => {
                       target: { name: "ngay_sinh", value: formatDay(date) },
                     });
                   }}
-                  required
                 />
               </div>
               <div>
@@ -253,10 +541,10 @@ const UpdateAccountApplicant = () => {
                   id="province_code"
                   name="province_code"
                   onChange={handleChange}
-                  defaultValue={formData.province_code}
+                  value={formData?.province_code}
                 >
                   {dataProvince.map((item, index) => (
-                    <option key={index} value={index + 1}>
+                    <option key={index} value={item.code}>
                       {item.value}
                     </option>
                   ))}
@@ -265,14 +553,15 @@ const UpdateAccountApplicant = () => {
             </div>
             <h4 className="mt-4 mb-2 ms-3 fw-bold">Kinh nghiệm, kỹ năng</h4>
             <div className="col-12  h-100">
-              <label htmlFor="ki_nang" className="form-label mt-3 ">
+              <label htmlFor="ky_nang" className="form-label mt-3 ">
                 Kỹ năng
               </label>
               <textarea
                 onChange={handleChange}
                 className="form-control"
-                name="ki_nang"
-                id="ki_nang"
+                name="ky_nang"
+                id="ky_nang"
+                value={formData?.ky_nang}
                 placeholder="VD: 
                 - Kỹ năng văn phòng : word , kỹ năng mềm "
               ></textarea>
@@ -281,19 +570,18 @@ const UpdateAccountApplicant = () => {
             <div className="row justify-content-between">
               <div className="col-5">
                 <div>
-                  <label htmlFor="degree_code" className="form-label mt-3">
+                  <label htmlFor="bang_cap_code" className="form-label mt-3">
                     Bằng cấp
                   </label>
                   <select
                     className="form-select form-select-sm"
-                    id="degree_code"
-                    name="degree_code"
+                    id="bang_cap_code"
+                    name="bang_cap_code"
                     onChange={handleChange}
-                    defaultValue={formData.degree_code}
-                    required
+                    value={formData?.bang_cap_code}
                   >
                     {dataDegree.map((item, index) => (
-                      <option key={index} value={index + 1}>
+                      <option key={index} value={item.code}>
                         {item.value}
                       </option>
                     ))}
@@ -309,8 +597,8 @@ const UpdateAccountApplicant = () => {
                     className="form-select form-select-sm"
                     id="kinh_nghiem"
                     name="kinh_nghiem"
+                    value={formData?.kinh_nghiem}
                     onChange={handleChange}
-                    required
                   >
                     <option value="0"> Chưa có kinh nghiệm </option>
                     <option value="1"> Có 1 năm kinh nghiệm </option>
@@ -332,11 +620,10 @@ const UpdateAccountApplicant = () => {
                     id="desire_job_field"
                     name="desire_job_field"
                     onChange={handleChange}
-                    defaultValue={formData.desire_job_field}
-                    required
+                    value={formData?.desire_job_field}
                   >
                     {dataJobField.map((item, index) => (
-                      <option key={index} value={index + 1}>
+                      <option key={index} value={item.code}>
                         {item.value}
                       </option>
                     ))}
@@ -344,18 +631,17 @@ const UpdateAccountApplicant = () => {
                 </div>
                 <div>
                   <label htmlFor="desire_job_type" className="form-label mt-3">
-                    Hình thức làm mong muốn
+                    Loại việc làm
                   </label>
                   <select
                     className="form-select form-select-sm"
                     id="desire_job_type"
                     name="desire_job_type"
                     onChange={handleChange}
-                    defaultValue={formData.desire_job_type}
-                    required
+                    value={formData?.desire_job_type}
                   >
                     {dataJobType.map((item, index) => (
-                      <option key={index} value={index + 1}>
+                      <option key={index} value={item.code}>
                         {item.value}
                       </option>
                     ))}
@@ -372,11 +658,10 @@ const UpdateAccountApplicant = () => {
                     id="desire_province"
                     name="desire_province"
                     onChange={handleChange}
-                    defaultValue={formData.desire_province}
-                    required
+                    value={formData?.desire_province}
                   >
                     {dataProvince.map((item, index) => (
-                      <option key={index} value={index + 1}>
+                      <option key={index} value={item.code}>
                         {item.value}
                       </option>
                     ))}
@@ -391,24 +676,23 @@ const UpdateAccountApplicant = () => {
                     id="desire_salary"
                     name="desire_salary"
                     onChange={handleChange}
-                    defaultValue={formData.desire_salary}
-                    required
+                    value={formData?.desire_salary}
                   >
                     {dataSalary.map((item, index) => (
-                      <option key={index} value={index + 1}>
+                      <option key={index} value={item.code}>
                         {item.value}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
+              <div className="d-flex justify-content-end mt-4">
+                <button type="submit" className="btn btn-primary mb-2">
+                  Submit
+                </button>
+              </div>
             </div>
-          </div> */}
-          {/* <div className="d-flex justify-content-end mt-4">
-            <button type="submit" className="btn btn-primary mb-2">
-              Submit
-            </button>
-          </div> */}
+          </div>
         </form>
       </div>
     </div>

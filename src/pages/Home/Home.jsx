@@ -6,16 +6,14 @@ import ReactPaginate from "react-paginate";
 
 function Home() {
   // pagination
-  const [totalJob, setTotalJob] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
   const fetchJobData = async (page) => {
     await request
-      .get(`/api/job?page=${page}&limit=2`)
+      .get(`/api/job?page=${page}&limit=7&order[]=createdAt&order[]=DESC`)
       .then((res) => {
         setDataJobs(res.data.jobData.rows);
         setTotalPages(res.data.total_pages);
-        setTotalJob(res.data.total);
       })
       .catch((err) => {
         console.log(err);

@@ -27,23 +27,23 @@ const CreateJob = () => {
     id_user: userId,
   });
 
-  const formatDay = (unformattedDate) => {
-    const dateObject = new Date(unformattedDate);
-    // Extract components
-    const year = dateObject.getFullYear();
-    const month = dateObject.getMonth() + 1; //getMonth() returns 0-based index
-    const day = dateObject.getDate();
-    const hours = dateObject.getHours();
-    const minutes = dateObject.getMinutes();
-    const seconds = dateObject.getSeconds();
-    // Format the date for MySQL
-    const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day
-      .toString()
-      .padStart(2, "0")} ${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    return formattedDate;
-  };
+  // const formatDay = (unformattedDate) => {
+  //   const dateObject = new Date(unformattedDate);
+  //   // Extract components
+  //   const year = dateObject.getFullYear();
+  //   const month = dateObject.getMonth() + 1; //getMonth() returns 0-based index
+  //   const day = dateObject.getDate();
+  //   const hours = dateObject.getHours();
+  //   const minutes = dateObject.getMinutes();
+  //   const seconds = dateObject.getSeconds();
+  //   // Format the date for MySQL
+  //   const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day
+  //     .toString()
+  //     .padStart(2, "0")} ${hours.toString().padStart(2, "0")}:${minutes
+  //     .toString()
+  //     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  //   return formattedDate;
+  // };
 
   const handleChange = (event) => {
     setFormData((prevState) => ({
@@ -334,11 +334,24 @@ const CreateJob = () => {
                     selected={startDate}
                     id="deadline"
                     className="form-control form-control-sm"
-                    onChange={(date) => {
-                      setStartDate(date);
-                      handleChange({
-                        target: { name: "deadline", value: formatDay(date) },
-                      });
+                    // onChange={(event) => {
+
+                    //   setStartDate(date);
+                    //   handleChange({
+                    //     target: { name: "deadline", value: formatDay(date) },
+                    //   });
+
+                    // }}
+                    onChange={(event) => {
+                      const newDate = event.target.value;
+
+                      // Validate if new date is in the future (including today)
+                      if (new Date(newDate) >= new Date()) {
+                        setStartDate(new Date(newDate));
+                      } else {
+                        // Handle invalid date selection (optional)
+                        console.error("Deadline cannot be in the past.");
+                      }
                     }}
                     required
                   />

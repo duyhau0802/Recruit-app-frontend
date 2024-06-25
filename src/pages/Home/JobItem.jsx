@@ -12,7 +12,7 @@ function JobItem({ job }) {
 
   return (
     <div className="d-flex job-item border mb-3 p-2">
-      <div className="me-3">
+      <div className="me-3" style={{ minWidth: "80px" }}>
         <Link className="text-decoration-none" to={"/job/" + job.id}>
           <img
             className="img-fluid rounded"
@@ -27,7 +27,9 @@ function JobItem({ job }) {
         </Link>
       </div>
       <div className="flex-grow-1">
-        <h5 className="h5 mb-1">{jobTitle}</h5>
+        <Link className="text-decoration-none text-black" to={"/job/" + job.id}>
+          <h5 className="h5 mb-1">{jobTitle}</h5>
+        </Link>
         <div className="text-muted mb-1">
           <Link to="#" className="text-decoration-none">
             {jobCompany}
