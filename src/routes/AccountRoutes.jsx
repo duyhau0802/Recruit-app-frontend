@@ -11,6 +11,7 @@ export default function JobRoutes() {
       <Routes>
         {/* cap nhat thong tin tai khoan */}
         <Route path="/" element={<UpdateAccountApplicant />} />
+        <Route path="/applicant" element={<UpdateAccountApplicant />} />
         <Route path="/employer" element={<UpdateAccountEmployer />} />
         <Route path="/admin" element={<UpdateAccountAdmin />} />
         {/* Private route  : admin role */}

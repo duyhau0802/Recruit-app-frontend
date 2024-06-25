@@ -91,8 +91,8 @@ function NavBar() {
                     Register
                   </NavLink>
                 </li>
-                <li className="nav-item" key={"registerEmployer"}>
-                  <NavLink className="nav-link" to="/registerEmployer">
+                <li className="nav-item" key={"register-employer"}>
+                  <NavLink className="nav-link" to="/register-employer">
                     Register as Employer
                   </NavLink>
                 </li>

@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 
 import Home from "./pages/Home/Home.jsx";
 import Login from "./pages/Login/Login.jsx";
-import ResetPass from "./pages/Login/ResetPass.jsx";
+// import ResetPass from "./pages/Login/ResetPass.jsx";
 import ResetPassword from "./pages/Login/ResetPassword.jsx";
 import Register from "./pages/Register/Register.jsx";
 import RegisterEmployer from "./pages/Register/RegisterEmployer.jsx";
@@ -21,8 +21,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/registerEmployer" element={<RegisterEmployer />} />
-        <Route path="/reset-password" element={<ResetPass />} />
+        <Route path="/register-employer" element={<RegisterEmployer />} />
+        {/* <Route path="/reset-password" element={<ResetPass />} /> */}
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard/*" element={<DashBoardRoutes />} />
         <Route path="/job/:id" element={<JobDetail />} />

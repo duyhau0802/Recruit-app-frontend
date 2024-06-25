@@ -146,7 +146,7 @@ const UpdateAccountAdmin = () => {
                 data-bs-toggle="modal"
                 data-bs-target="#modalChooseAvatar"
               >
-                Update avatar
+                Thay avatar
               </button>
               {selectedFile && (
                 <p className="mt-1">

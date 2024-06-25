@@ -154,15 +154,24 @@ const UpdateAccountApplicant = () => {
           email: userData.email,
         })
         .then((res) => {
-          setAlertMessage("Check your email to reset your password");
+          setAlertMessage(res.data.mes);
           setAlertVariant("success");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 2000);
+        })
+        .catch((err) => {
+          console.log(err);
+          setAlertMessage("Error resetting password at server");
+          setAlertVariant("error");
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
           }, 2000);
         });
     } catch (error) {
-      setAlertMessage("Error deleting user. Please try again.");
+      setAlertMessage("Error resetting password at client");
       setAlertVariant("error");
       setShowAlert(true);
       setTimeout(() => {
@@ -171,31 +180,45 @@ const UpdateAccountApplicant = () => {
     }
   };
 
-  const handleUpdateUserSubmit = async (event) => {
+  const handleAlert = (variant, mes) => {
+    setAlertMessage(mes);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000);
+  };
+
+  const handleUpdateAvatarSubmit = async (event) => {
     event.preventDefault();
     const insertData = new FormData();
     insertData.append("avatar", selectedFile);
-    insertData.append("username", userData.username);
     insertData.append("user_id", user_id);
-    insertData.append("email", userData.email);
     await request
       .put("/api/user", insertData, {
         headers: {
-          "Content-Type": "multipart/form-data", // Required for file uploads
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((res) => {
         console.log(res.data);
         setSelectedFile(null);
         setIsSummitSuccessful(true);
-        setAlertMessage("Cập nhật tài khoản thành công");
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 2000);
+        handleAlert("success", "Cập nhật ảnh đại diện thành công");
+      });
+  };
+
+  const handleUpdateUserSubmit = async (event) => {
+    event.preventDefault();
+    await request
+      .put(`/api/user/${user_id}`, userData)
+      .then((res) => {
+        console.log(res.data);
+        setIsSummitSuccessful(true);
+        handleAlert("success", "Cập nhật tài khoản thành công");
       })
       .catch((err) => {
-        alert("Error uploading file");
+        handleAlert("error", "error handleUpdateUserSubmit");
         console.log(err);
       });
   };
@@ -232,6 +255,7 @@ const UpdateAccountApplicant = () => {
     try {
       await request.delete(`/api/user/${user_id}`).then((res) => {
         setAlertMessage(res.data.mes);
+        setAlertVariant("success");
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
@@ -240,6 +264,7 @@ const UpdateAccountApplicant = () => {
       });
     } catch (error) {
       setAlertMessage("Error deleting user. Please try again.");
+      setAlertVariant("error");
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
@@ -252,18 +277,57 @@ const UpdateAccountApplicant = () => {
     setSelectedFile(event.target.files[0]);
   };
 
-  // const handleCheck = (e) => {
-  //   console.log(formData);
-  // };
+  const handleCheck = (e) => {
+    console.log(userData);
+  };
   return (
     <div className="container d-flex justify-content-center bg-light shadow-sm p-4 me-3 mb-5">
       {showAlert && (
         <AlertComponent message={alertMessage} variant={alertVariant} />
       )}
+      {/* 1.modal avatar */}
+      <div className="modal fade " id="modalChooseAvatar">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title fw-bold">Chọn avatar của bạn</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                data-bs-target="#modalChooseAvatar"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group d-flex flex-column">
+                <label htmlFor="avatar" className="form-label fw-bold">
+                  Avatar
+                </label>
+                <input
+                  type="file"
+                  className="form-select"
+                  onChange={onFileChange}
+                  name="avatar"
+                  id="avatar"
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary text-center mt-3"
+                  data-bs-dismiss="modal"
+                  onClick={handleUpdateAvatarSubmit}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="col col-9">
         {/* <button onClick={handleCheck}>Check</button> */}
         <form onSubmit={handleUpdateUserSubmit}>
-          <div className="row justify-content-between shadow p-3 mb-3">
+          <div className="row-12 justify-content-between shadow p-3 mb-3">
+            <h4 className="ms-3 fw-bold">THÔNG TIN TÀI KHOẢN</h4>
             <div
               className="col justify-content-center p-3 mb-3 d-flex flex-column"
               style={{ alignItems: "center" }}
@@ -289,55 +353,9 @@ const UpdateAccountApplicant = () => {
                 data-bs-toggle="modal"
                 data-bs-target="#modalChooseAvatar"
               >
-                Update avatar
+                Thay avatar
               </button>
-              {selectedFile && (
-                <p className="mt-1">
-                  New avatar file: {selectedFile.name} <br />{" "}
-                  <strong>Click Cập nhật để đổi avatar</strong>
-                </p>
-              )}
-              {/* 1.modal avatar */}
-              <div className="modal fade " id="modalChooseAvatar">
-                <div className="modal-dialog modal-dialog-centered">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title fw-bold">
-                        Chọn avatar của bạn
-                      </h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        data-bs-target="#modalChooseAvatar"
-                      ></button>
-                    </div>
-                    <div className="modal-body">
-                      <div className="form-group d-flex flex-column">
-                        <label htmlFor="avatar" className="form-label fw-bold">
-                          Avatar
-                        </label>
-                        <input
-                          type="file"
-                          className="form-select"
-                          onChange={onFileChange}
-                          name="avatar"
-                          id="avatar"
-                        />
-                        <button
-                          type="button"
-                          className="btn btn-primary text-center mt-3"
-                          data-bs-dismiss="modal"
-                        >
-                          Chọn
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-            <h4 className="ms-3 fw-bold">THÔNG TIN TÀI KHOẢN</h4>
             <div className="col-5">
               <div>
                 <label htmlFor="username" className="form-label mt-3">

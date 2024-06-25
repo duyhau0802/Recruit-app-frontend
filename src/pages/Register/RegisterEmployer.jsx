@@ -5,13 +5,14 @@ import request from "../../configs/request.js";
 import AlertComponent from "../../components/AlertComponent.jsx";
 
 function RegisterEmployer() {
-  const [cpassword, setCpassword] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
+    cpassword: "",
     ten_cong_ty: "",
     address_cong_ty: "",
+    role_code: "R2",
   });
   const [showAlert, setShowAlert] = useState(false);
   const [alertVariant, setAlertVariant] = useState("");
@@ -23,32 +24,39 @@ function RegisterEmployer() {
       [event.target.name]: event.target.value,
     }));
   };
+  const handleAlert = (variant, mes) => {
+    setAlertMessage(mes);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000);
+  };
   const onSubmit = (e) => {
     e.preventDefault();
     if (formData.password !== cpassword) {
-      alert("Password and confirm password are not the same");
+      handleAlert("error", "Password and confirm password are not the same");
       return;
     }
     request
       .post("/api/auth/register", formData)
       .then((res) => {
-        setAlertVariant("success");
-        setAlertMessage(res.data.mes);
-        setShowAlert(true);
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("username", res.data.username);
         localStorage.setItem("user_id", res.data.userId);
         localStorage.setItem("user_role", res.data.role_code);
         if (res.data.err === 0) {
           setTimeout(() => {
+            handleAlert("success", "Register successfully");
             navigate("/");
-          }, 1000);
+          }, 3000);
         }
         if (res.data.err === 1) {
           alert(res.data.mes);
         }
       })
       .catch((err) => {
+        alert(err);
         console.log(err);
       });
   };
@@ -100,10 +108,15 @@ function RegisterEmployer() {
                 type="password"
                 placeholder=""
                 name="cpassword"
-                onChange={(e) => setCpassword(e.target.value)}
+                onChange={handleChange}
                 className="form-control"
                 required
               />
+              {formData.password !== formData.cpassword && (
+                <p className="text-danger">
+                  Password and confirm password are not the same
+                </p>
+              )}
             </div>
             <div className="mb-2">
               <label htmlFor="ten_cong_ty">Tên công ty</label>

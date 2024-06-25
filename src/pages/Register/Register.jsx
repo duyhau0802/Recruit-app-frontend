@@ -10,6 +10,7 @@ function Register() {
     email: "",
     password: "",
     cpassword: "",
+    role_code: "R3",
   });
   const [showAlert, setShowAlert] = useState(false);
   const [alertVariant, setAlertVariant] = useState("");
