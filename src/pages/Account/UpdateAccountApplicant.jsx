@@ -326,10 +326,10 @@ const UpdateAccountApplicant = () => {
       <div className="col col-9">
         {/* <button onClick={handleCheck}>Check</button> */}
         <form onSubmit={handleUpdateUserSubmit}>
-          <div className="row-12 justify-content-between shadow p-3 mb-3">
+          <div className="row justify-content-between shadow p-3 mb-3">
             <h4 className="ms-3 fw-bold">THÔNG TIN TÀI KHOẢN</h4>
             <div
-              className="col justify-content-center p-3 mb-3 d-flex flex-column"
+              className="col-12 justify-content-center p-3 mb-3 d-flex flex-column"
               style={{ alignItems: "center" }}
             >
               <img
@@ -348,8 +348,7 @@ const UpdateAccountApplicant = () => {
 
               <button
                 type="button"
-                className="btn btn-success mt-2 btn-sm"
-                style={{ width: "110px" }}
+                className="btn btn-warning mt-2 btn-sm"
                 data-bs-toggle="modal"
                 data-bs-target="#modalChooseAvatar"
               >

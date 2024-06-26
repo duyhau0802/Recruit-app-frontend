@@ -8,28 +8,49 @@ import Login from "./pages/Login/Login.jsx";
 import ResetPassword from "./pages/Login/ResetPassword.jsx";
 import Register from "./pages/Register/Register.jsx";
 import RegisterEmployer from "./pages/Register/RegisterEmployer.jsx";
-import NavBar from "./components/NavBar/NavBar.jsx";
-import Footer from "./components/Footer/Footer.jsx";
+import Layout from "./components/Layout.jsx";
+import EmployerDetail from "./pages/Employer/EmployerDetail.jsx";
+import Unauthorized from "./components/Unauthorized.jsx";
+import RequireAuth from "./components/RequireAuth.jsx";
 import DashBoardRoutes from "./routes/DashBoardRoutes.jsx";
 import JobDetail from "./pages/Job/JobDetail.jsx";
 
+const ROLES = {
+  Admin: "R1",
+  Employer: "R2",
+  Applicant: "R3",
+};
+
 function App() {
   return (
-    <div className="App">
-      <NavBar />
-      <Routes>
+    <Routes>
+      <Route element={<Layout />}>
+        {/* public routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/register-employer" element={<RegisterEmployer />} />
-        {/* <Route path="/reset-password" element={<ResetPass />} /> */}
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/dashboard/*" element={<DashBoardRoutes />} />
         <Route path="/job/:id" element={<JobDetail />} />
-        <Route path="*" element={<Home />} />
-      </Routes>
-      <Footer />
-    </div>
+        <Route path="/employer/:id" element={<EmployerDetail />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        {/* protect routes*/}
+        <Route
+          element={
+            <RequireAuth
+              allowedRoles={[ROLES.Admin, ROLES.Employer, ROLES.Applicant]}
+            />
+          }
+        >
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/dashboard/*" element={<DashBoardRoutes />} />
+        </Route>
+        {/* catch all */}
+        <Route
+          path="*"
+          element={<h1 className="text-center mt-4">404 Pages not found</h1>}
+        />
+      </Route>
+    </Routes>
   );
 }
 

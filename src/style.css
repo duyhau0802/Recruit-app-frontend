@@ -63,6 +63,9 @@ input {
   width: 280px;
 }
 
-button {
-  box-shadow: none;
+input,
+button,
+textarea,
+select {
+  box-shadow: none !important;
 }

@@ -3,15 +3,28 @@ import "./style.css";
 import request from "../../configs/request.js";
 import { Link, useNavigate } from "react-router-dom";
 import AlertComponent from "../../components/AlertComponent.jsx";
-
+import useAuth from "../../hooks/useAuth.jsx";
 function Login() {
+  const { setAuth } = useAuth();
+  const navigate = useNavigate();
+  // const location = useLocation();
+  // const from = location.state?.from?.pathname || "/";
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const navigate = useNavigate();
+  const [alertVariant, setAlertVariant] = useState("");
+  const handleAlert = (variant, mes) => {
+    setAlertMessage(mes);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 1000);
+  };
   const handleChange = (event) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -23,26 +36,35 @@ function Login() {
     request
       .post("/api/auth/login", formData)
       .then((res) => {
-        setAlertMessage(res.data.mes);
-        setShowAlert(true);
+        if (res.data.err === 1) {
+          handleAlert("error", res.data.mes);
+          return;
+        }
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("username", res.data.username);
         localStorage.setItem("user_id", res.data.userId);
         localStorage.setItem("user_role", res.data.role_code);
+        const accessToken = res.data.access_token;
+        const roles = res.data.role_code;
+        const userName = res.data.username;
+        const userId = res.data.userId;
+        setAuth({ accessToken, roles, userName, userId });
+        handleAlert("success", res.data.mes);
         setTimeout(() => {
           navigate("/", { state: { token: res.data.access_token } });
-          window.location.reload();
+          // window.location.reload();
         }, 1000);
       })
       .catch((err) => {
-        alert("Something went wrong");
+        handleAlert("error", err?.response?.mes);
         console.log(err);
       });
   };
-
   return (
     <div className="d-flex justify-content-center w-100 h-100">
-      {showAlert && <AlertComponent message={alertMessage} />}
+      {showAlert && (
+        <AlertComponent message={alertMessage} variant={alertVariant} />
+      )}
       <div className="col-4 p-5 ps-5 pe-5 rounded-5 m-2 border border-2 shadow mt-3">
         <div className="d-flex justify-content-center ">
           <img

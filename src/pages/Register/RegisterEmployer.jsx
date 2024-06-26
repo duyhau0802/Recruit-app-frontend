@@ -12,7 +12,6 @@ function RegisterEmployer() {
     cpassword: "",
     ten_cong_ty: "",
     address_cong_ty: "",
-    role_code: "R2",
   });
   const [showAlert, setShowAlert] = useState(false);
   const [alertVariant, setAlertVariant] = useState("");
@@ -34,16 +33,16 @@ function RegisterEmployer() {
   };
   const onSubmit = (e) => {
     e.preventDefault();
-    if (formData.password !== cpassword) {
+    if (formData.password !== formData.cpassword) {
       handleAlert("error", "Password and confirm password are not the same");
       return;
     }
     request
-      .post("/api/auth/register", formData)
+      .post("/api/auth/registerEmployer", formData)
       .then((res) => {
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("username", res.data.username);
-        localStorage.setItem("user_id", res.data.userId);
+        localStorage.setItem("user_id", res.data.user_id);
         localStorage.setItem("user_role", res.data.role_code);
         if (res.data.err === 0) {
           setTimeout(() => {

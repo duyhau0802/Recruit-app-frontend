@@ -23,6 +23,14 @@ function NavBar() {
     setIsLoggedIn(false);
     navigate("/login");
   };
+  const user_role = localStorage.getItem("user_role");
+  if (user_role === "R1") {
+    var role_value = "admin";
+  } else if (user_role === "R2") {
+    var role_value = "employer";
+  } else if (user_role === "R3") {
+    var role_value = "applicant";
+  }
   return (
     <>
       <nav className={`navbar navbar-expand-md navbar-dark bg-dark`}>
@@ -62,7 +70,10 @@ function NavBar() {
                     </Link>
                     <ul className="dropdown-menu">
                       <li>
-                        <NavLink className="dropdown-item" to="/dashboard">
+                        <NavLink
+                          className="dropdown-item"
+                          to={`/dashboard/account/${role_value}`}
+                        >
                           Dashboard
                         </NavLink>
                       </li>
@@ -81,19 +92,19 @@ function NavBar() {
               </>
             ) : (
               <ul className="navbar-nav ms-auto text-end pe-3">
-                <li className="nav-item" key={"login"}>
+                <li className="nav-item ms-2" key={"login"}>
                   <NavLink className="nav-link" to="/login">
                     Login
                   </NavLink>
                 </li>
-                <li className="nav-item" key={"register"}>
+                <li className="nav-item ms-2" key={"register"}>
                   <NavLink className="nav-link" to="/register">
                     Register
                   </NavLink>
                 </li>
-                <li className="nav-item" key={"register-employer"}>
+                <li className="nav-item ms-2" key={"register-employer"}>
                   <NavLink className="nav-link" to="/register-employer">
-                    Register as Employer
+                    Employer Register
                   </NavLink>
                 </li>
               </ul>

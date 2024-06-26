@@ -27,8 +27,11 @@ function JobItem(job) {
       <div className="flex-grow-1">
         <h5 className="h5 mb-1">{jobTitle}</h5>
         <div className="text-muted mb-1">
-          <Link to="#" className="text-decoration-none">
-            {jobCompany}
+          <Link
+            to={"/employer/" + job.employerData.id}
+            className="text-decoration-none"
+          >
+            {jobCompany}/
           </Link>
         </div>
         <div className="d-flex mb-2">

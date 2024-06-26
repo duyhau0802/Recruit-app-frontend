@@ -83,7 +83,7 @@ const JobDetail = () => {
               <div className="col-2">
                 <img
                   src={
-                    !job.employerData?.logo_cong_ty &&
+                    job.employerData?.logo_cong_ty ||
                     "https://timviec.com.vn/default/images/logo_company_80x80.png"
                   }
                   alt="logo cong ty"

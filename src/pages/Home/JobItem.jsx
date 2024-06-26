@@ -4,8 +4,8 @@ import formatDay from "../../utils/formatDay.js";
 function JobItem({ job }) {
   // const { jobTitle, jobCompany, jobSalary, jobLocation } = job;
   let jobTitle = job.vi_tri;
-  let jobCompany = job.employerData.ten_cong_ty;
-  let jobSalary = job.salaryData.value;
+  let jobCompany = job.employerData?.ten_cong_ty;
+  let jobSalary = job.salaryData?.value;
   let jobLocation = job.provinceData.value;
   let logoCompany = job.employerData.logo_cong_ty;
   let jobDeadline = job.deadline;
@@ -27,11 +27,18 @@ function JobItem({ job }) {
         </Link>
       </div>
       <div className="flex-grow-1">
-        <Link className="text-decoration-none text-black" to={"/job/" + job.id}>
+        <Link
+          className="text-decoration-none text-black"
+          to={"/job/" + job.id}
+          onClick={() => window.scrollTo(0, 0)}
+        >
           <h5 className="h5 mb-1">{jobTitle}</h5>
         </Link>
         <div className="text-muted mb-1">
-          <Link to="#" className="text-decoration-none">
+          <Link
+            to={"/employer/" + job.employerData.id}
+            className="text-decoration-none"
+          >
             {jobCompany}
           </Link>
         </div>

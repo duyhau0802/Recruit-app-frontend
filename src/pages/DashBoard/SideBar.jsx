@@ -19,7 +19,7 @@ function SideBar() {
               <li className="list-group-item list-group-item-action">
                 <NavLink
                   className="text-decoration-none text-black d-block w-100 text-center"
-                  to="/dashboard/account"
+                  to="/dashboard/account/applicant"
                 >
                   Quản lý tài khoản Applicant
                 </NavLink>
@@ -90,6 +90,14 @@ function SideBar() {
           {/* role admin */}
           {role === "R1" && (
             <>
+              <li className="list-group-item list-group-item-action">
+                <NavLink
+                  className="text-decoration-none text-black d-block w-100 text-center"
+                  to="/dashboard/account/admin"
+                >
+                  Quản lý tài khoản Admin
+                </NavLink>
+              </li>
               <li className="list-group-item list-group-item-action">
                 <NavLink
                   className="text-decoration-none text-black d-block w-100 text-center"

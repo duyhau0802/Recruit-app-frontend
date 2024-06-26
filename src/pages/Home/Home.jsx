@@ -1,6 +1,5 @@
 import request from "../../configs/request.js";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import JobItem from "./JobItem.jsx";
 import ReactPaginate from "react-paginate";
 
@@ -8,9 +7,19 @@ function Home() {
   // pagination
   const [totalPages, setTotalPages] = useState(0);
 
-  const fetchJobData = async (page) => {
+  const fetchJobData = async (
+    page = 1,
+    name = "",
+    province_cong_viec = "",
+    salary_code = ""
+  ) => {
+    let urlRequest = `/api/job?page=${page}&limit=7&order[]=createdAt&order[]=DESC`;
+    if (name) urlRequest += `&name=${name}`;
+    if (province_cong_viec)
+      urlRequest += `&province_cong_viec=${province_cong_viec}`;
+    if (salary_code) urlRequest += `&salary_code=${salary_code}`;
     await request
-      .get(`/api/job?page=${page}&limit=7&order[]=createdAt&order[]=DESC`)
+      .get(urlRequest)
       .then((res) => {
         setDataJobs(res.data.jobData.rows);
         setTotalPages(res.data.total_pages);
@@ -21,7 +30,12 @@ function Home() {
   };
 
   const handlePageClick = (event) => {
-    fetchJobData(+event.selected + 1);
+    fetchJobData(
+      +event.selected + 1,
+      formData.name,
+      formData.province_cong_viec,
+      formData.salary_code
+    );
   };
 
   const [dataJobs, setDataJobs] = useState([]);
@@ -59,12 +73,19 @@ function Home() {
           console.log(err);
         });
     };
-    fetchJobData(1);
+    fetchJobData();
     fetchProvinceData();
     fetchSalaryData();
   }, []);
-  const timKiem = () => {
-    console.log(formData);
+
+  const timKiem = (event) => {
+    event.preventDefault();
+    fetchJobData(
+      1,
+      formData.name,
+      formData.province_cong_viec,
+      formData.salary_code
+    );
   };
   return (
     <div
@@ -72,11 +93,11 @@ function Home() {
       style={{
         padding: "24px auto",
         alignItems: "center",
-        backgroundColor: "grey",
+        // backgroundColor: "grey",
       }}
     >
       <div
-        className="container"
+        className="container shadow pb-2"
         style={{
           backgroundColor: "white",
           padding: "25px",
@@ -84,7 +105,7 @@ function Home() {
         }}
       >
         <div className="row">
-          <h4>Tìm việc làm nhanh</h4>
+          <h2 className="mb-3">Tìm việc làm nhanh</h2>
           <form onSubmit={timKiem}>
             <div className="input-group mb-3">
               <span className="input-group-text">Việc làm</span>
@@ -102,9 +123,9 @@ function Home() {
                 name="province_cong_viec"
                 onChange={handleChange}
               >
-                <option value="0">Tất cả</option>
+                <option value="">Tất cả</option>
                 {dataProvince.map((provinces, index) => (
-                  <option key={index} value={index + 1}>
+                  <option key={index} value={provinces.code}>
                     {provinces.value}
                   </option>
                 ))}
@@ -115,8 +136,9 @@ function Home() {
                 name="salary_code"
                 onChange={handleChange}
               >
+                <option value="">Tất cả</option>
                 {dataSalary.map((salary, index) => (
-                  <option key={index} value={index + 1}>
+                  <option key={index} value={salary.code}>
                     {salary.value}
                   </option>
                 ))}

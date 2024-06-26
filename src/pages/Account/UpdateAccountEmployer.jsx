@@ -110,7 +110,7 @@ const UpdateAccountEmployer = () => {
     try {
       await request
         .post("/api/auth/password-reset", {
-          email: userData.email,
+          email: userData?.email,
         })
         .then((res) => {
           setAlertMessage(res.data.mes);
@@ -349,9 +349,8 @@ const UpdateAccountEmployer = () => {
             >
               <img
                 src={
-                  userData.avatar
-                    ? userData.avatar
-                    : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  userData?.avatar ||
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                 }
                 alt="avatar"
                 style={{
@@ -382,7 +381,7 @@ const UpdateAccountEmployer = () => {
                   id="username"
                   onChange={handleUserChange}
                   className="form-control form-control-sm"
-                  value={userData.username}
+                  value={userData?.username}
                   required
                 />
               </div>
@@ -398,9 +397,9 @@ const UpdateAccountEmployer = () => {
                   id="role_code"
                   className="form-control form-control-sm"
                   value={
-                    userData.role_code === "R1"
+                    userData?.role_code === "R1"
                       ? "Admin"
-                      : userData.role_code === "R2"
+                      : userData?.role_code === "R2"
                       ? "Nhà tuyển dụng"
                       : "Ứng viên"
                   }
@@ -419,7 +418,7 @@ const UpdateAccountEmployer = () => {
                   id="email"
                   onChange={handleUserChange}
                   className="form-control form-control-sm"
-                  value={userData.email}
+                  value={userData?.email}
                   required
                 />
               </div>

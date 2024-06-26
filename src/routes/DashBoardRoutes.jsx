@@ -10,6 +10,7 @@ import JobRoutes from "./JobRoutes.jsx";
 import ResumeRoutes from "./ResumeRoutes.jsx";
 import ApplicationRoutes from "./ApplicationRoutes.jsx";
 import UserRoutes from "./UserRoutes.jsx";
+import RequireAuth from "../components/RequireAuth.jsx";
 
 export default function DashBoardRoutes() {
   return (
@@ -21,17 +22,25 @@ export default function DashBoardRoutes() {
         <div className="col">
           <Routes>
             <Route>
-              <Route path="/*" element={<AccountRoutes />} />
-              <Route path="/degree/*" element={<DegreeRoutes />} />
-              <Route path="/province/*" element={<ProvinceRoutes />} />
-              <Route path="/salary/*" element={<SalaryRoutes />} />
-              <Route path="/job-type/*" element={<JobTypeRoutes />} />
-              <Route path="/job-field/*" element={<JobFieldRoutes />} />
-              <Route path="/job/*" element={<JobRoutes />} />
+              {/* role Admin */}
+              <Route element={<RequireAuth allowedRoles={["R1"]} />}>
+                <Route path="/degree/*" element={<DegreeRoutes />} />
+                <Route path="/province/*" element={<ProvinceRoutes />} />
+                <Route path="/salary/*" element={<SalaryRoutes />} />
+                <Route path="/job-type/*" element={<JobTypeRoutes />} />
+                <Route path="/job-field/*" element={<JobFieldRoutes />} />
+                <Route path="/user/*" element={<UserRoutes />} />
+              </Route>
+              {/* role employer */}
+              <Route element={<RequireAuth allowedRoles={["R2"]} />}>
+                <Route path="/job/*" element={<JobRoutes />} />
+              </Route>
+              {/* role applicant */}
+              <Route element={<RequireAuth allowedRoles={["R3"]} />}>
+                <Route path="/resume/*" element={<ResumeRoutes />} />
+              </Route>
               <Route path="/account/*" element={<AccountRoutes />} />
-              <Route path="/resume/*" element={<ResumeRoutes />} />
               <Route path="/application/*" element={<ApplicationRoutes />} />
-              <Route path="/user/*" element={<UserRoutes />} />
             </Route>
           </Routes>
         </div>
