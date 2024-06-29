@@ -11,7 +11,6 @@ const Dashboard = () => {
           <h1 className="m-0">
             Dashboard Role : {localStorage.getItem("role")}
           </h1>
-          {/* Add your navbar/user options here */}
         </div>
       </header>
 

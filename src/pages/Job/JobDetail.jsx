@@ -3,6 +3,7 @@ import request from "../../configs/request";
 import { Link, useParams } from "react-router-dom";
 import formatDay from "../../utils/formatDay";
 import axios from "axios";
+import AlertComponent from "../../components/AlertComponent.jsx";
 
 const JobDetail = () => {
   const [job, setJob] = useState({});
@@ -11,7 +12,18 @@ const JobDetail = () => {
   const [cvData, setCvData] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const user_id = localStorage.getItem("user_id");
-
+  const roles = localStorage.getItem("user_role");
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState("");
+  const handleAlert = (variant, mes) => {
+    setAlertMessage(mes);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000);
+  };
   const handleImageClick = (imageId) => {
     setSelectedCV(imageId);
   };
@@ -28,16 +40,14 @@ const JobDetail = () => {
   };
   const handleSearch = async () => {
     const titleValue = {
-      job_title: "java developer",
-      // job_title: job?.vi_tri,
+      // job_title: "java developer",
+      job_title: job?.vi_tri,
     };
     console.log(titleValue);
     const recommendedJobs = await fetchRecommendations(titleValue);
     setRecommendations(recommendedJobs?.data);
+    handleAlert("success", "Gọi API đề xuất tin thành công!");
   };
-  // const handlCheck = () => {
-  //   console.log(recommendations);
-  // };
   useEffect(() => {
     request.get(`/api/job/${id}`).then((res) => {
       setJob(res.data);
@@ -56,7 +66,8 @@ const JobDetail = () => {
     request
       .post("/api/application", data)
       .then((res) => {
-        alert("Đăng ký thành công");
+        if (res.data.err) handleAlert("error", res.data.mes);
+        else handleAlert("success", "Đăng ký thành công");
       })
       .catch((err) => {
         console.log(err);
@@ -65,6 +76,9 @@ const JobDetail = () => {
 
   return (
     <>
+      {showAlert && (
+        <AlertComponent variant={alertVariant} message={alertMessage} />
+      )}
       <div className="container d-flex">
         <>
           <div className="col w-100">
@@ -100,13 +114,15 @@ const JobDetail = () => {
               </div>
               <div className="col">
                 <div className="">
-                  <button
-                    className="btn btn-primary btn-sm me-4"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalApply"
-                  >
-                    Ứng tuyển
-                  </button>
+                  {roles === "R3" && (
+                    <button
+                      className="btn btn-primary btn-sm me-4"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalApply"
+                    >
+                      Ứng tuyển
+                    </button>
+                  )}
                   <div className="modal fade " id="modalApply">
                     <div className="modal-dialog modal-dialog-centered">
                       <div className="modal-content">
@@ -167,6 +183,7 @@ const JobDetail = () => {
                             type="button"
                             className="btn btn-primary"
                             onClick={() => handleApply()}
+                            data-bs-dismiss="modal"
                           >
                             Apply
                           </button>
@@ -174,7 +191,6 @@ const JobDetail = () => {
                       </div>
                     </div>
                   </div>
-                  <Link className="btn btn-success btn-sm">Ưa thích</Link>
                   <div className="row mt-3">
                     Hạn nộp : {formatDay(job.deadline)}
                   </div>

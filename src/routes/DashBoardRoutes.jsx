@@ -11,6 +11,7 @@ import ResumeRoutes from "./ResumeRoutes.jsx";
 import ApplicationRoutes from "./ApplicationRoutes.jsx";
 import UserRoutes from "./UserRoutes.jsx";
 import RequireAuth from "../components/RequireAuth.jsx";
+import SaveJobList from "../pages/SavedJob/SaveJobList.jsx";
 
 export default function DashBoardRoutes() {
   return (
@@ -32,12 +33,13 @@ export default function DashBoardRoutes() {
                 <Route path="/user/*" element={<UserRoutes />} />
               </Route>
               {/* role employer */}
-              <Route element={<RequireAuth allowedRoles={["R2"]} />}>
+              <Route element={<RequireAuth allowedRoles={["R2", "R1"]} />}>
                 <Route path="/job/*" element={<JobRoutes />} />
               </Route>
               {/* role applicant */}
               <Route element={<RequireAuth allowedRoles={["R3"]} />}>
                 <Route path="/resume/*" element={<ResumeRoutes />} />
+                <Route path="/saved-job-list" element={<SaveJobList />} />
               </Route>
               <Route path="/account/*" element={<AccountRoutes />} />
               <Route path="/application/*" element={<ApplicationRoutes />} />

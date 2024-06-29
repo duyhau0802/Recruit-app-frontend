@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import request from "../../configs/request.js";
 import { useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import formatDay from "../../utils/formatDay";
 import AlertComponent from "../../components/AlertComponent.jsx";
 
 const UpdateAccountEmployer = () => {
@@ -13,7 +11,6 @@ const UpdateAccountEmployer = () => {
   const [isSummitSuccessful, setIsSummitSuccessful] = useState(false);
 
   const user_id = localStorage.getItem("user_id");
-  const [startDate, setStartDate] = useState(new Date());
 
   const [dataJobField, setDataJobField] = useState([]);
   const [dataProvince, setDataProvince] = useState([]);
@@ -225,7 +222,7 @@ const UpdateAccountEmployer = () => {
   const navigate = useNavigate();
   const logout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate("/");
   };
   const handleConfirmDeleteAccount = async () => {
     // delete user
@@ -254,9 +251,6 @@ const UpdateAccountEmployer = () => {
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleCheck = (e) => {
-    console.log(userData);
-  };
   return (
     <div className="container d-flex justify-content-center bg-light shadow-sm p-4 me-3 mb-5">
       {showAlert && (
@@ -582,10 +576,12 @@ const UpdateAccountEmployer = () => {
                 <div className="input-group input-group-sm">
                   <input
                     type="number"
+                    min="1"
                     id="quy_mo_cong_ty"
                     name="quy_mo_cong_ty"
                     className="form-control form-control-sm"
                     onChange={handleChange}
+                    value={Number(formData?.quy_mo_cong_ty) || ""}
                   />
                   <span className="input-group-text">người</span>
                 </div>

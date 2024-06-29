@@ -21,15 +21,16 @@ function NavBar() {
   const logout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    navigate("/login");
+    navigate("/");
   };
   const user_role = localStorage.getItem("user_role");
+  var role_value = "";
   if (user_role === "R1") {
-    var role_value = "admin";
+    role_value = "admin";
   } else if (user_role === "R2") {
-    var role_value = "employer";
+    role_value = "employer";
   } else if (user_role === "R3") {
-    var role_value = "applicant";
+    role_value = "applicant";
   }
   return (
     <>

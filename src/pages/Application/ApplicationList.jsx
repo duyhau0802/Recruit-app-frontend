@@ -43,8 +43,6 @@ const ApplicationList = () => {
                   <th>STT</th>
                   <th>Job</th>
                   <th>Deadline</th>
-                  {/* <th>Tên ứng viên </th> */}
-                  {/* <th>Resume</th> */}
                   <th>Status</th>
                   <th>Create At</th>
                   <th>Ten cong ty</th>
@@ -60,16 +58,6 @@ const ApplicationList = () => {
                         <td>{index + 1}</td>
                         <td>{item.jobData.vi_tri}</td>
                         <td>{formatDay(item.jobData.deadline)}</td>
-                        {/* <td>{item.ungVienData.userData.username}</td> */}
-                        {/* <td>
-                          <Link to={item.resumeData.cv_link} target="_blank">
-                            <img
-                              src={item.resumeData.cv_link}
-                              alt="resume"
-                              style={{ width: "80px", height: "80px" }}
-                            />
-                          </Link>
-                        </td> */}
                         <td>{item.status}</td>
                         <td>{formatDay(item.createdAt)}</td>
                         <td>{item.employerData.ten_cong_ty}</td>

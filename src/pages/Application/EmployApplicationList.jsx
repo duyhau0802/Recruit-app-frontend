@@ -2,13 +2,24 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import request from "../../configs/request.js";
 import formatDay from "../../utils/formatDay";
+import AlertComponent from "../../components/AlertComponent.jsx";
 
 const EmployApplicationList = () => {
   const [data, setData] = useState([]);
   const [deleted, setDeleted] = useState(true);
   const user_id = localStorage.getItem("user_id");
   const [selectedOption, setSelectedOption] = useState("");
-
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState("");
+  const handleAlert = (variant, mes) => {
+    setAlertMessage(mes);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 1000);
+  };
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
     console.log(selectedOption);
@@ -47,16 +58,19 @@ const EmployApplicationList = () => {
       .put(`/api/application/${id}`, updateData)
       .then((res) => {
         console.log(res);
-        alert("Cập nhật trạng thái thành công");
+        handleAlert("success", "Cập nhật trạng thái thành công");
       })
       .catch((err) => {
         console.log(err);
-        alert("Something went wrong");
+        handleAlert("error", "Something went wrong");
       });
   };
 
   return (
     <div className="container mb-5 bg-light shadow-sm pt-2  me-3">
+      {showAlert && (
+        <AlertComponent variant={alertVariant} message={alertMessage} />
+      )}
       <h3 className="text-center mt-3 fw-bold ">Application list</h3>
       <div className="d-flex justify-content-center mt-3">
         <div className="w-100">
@@ -81,7 +95,14 @@ const EmployApplicationList = () => {
                         <td>{index + 1}</td>
                         <td>{item.jobData.vi_tri}</td>
                         <td>{formatDay(item.jobData.deadline)}</td>
-                        <td>{item.ungVienData.userData.username}</td>
+                        <td>
+                          <Link
+                            to={`/applicant/${item.id_ung_vien}`}
+                            style={{ textDecoration: "none" }}
+                          >
+                            {item.ungVienData.userData.username}
+                          </Link>
+                        </td>
                         <td>
                           <Link to={item.resumeData.cv_link} target="_blank">
                             <img

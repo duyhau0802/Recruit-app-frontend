@@ -3,41 +3,39 @@ import request from "../../configs/request.js";
 import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import AlertComponent from "../../components/AlertComponent.jsx";
+import axios from "axios";
 
 const UpdateAccountAdmin = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const [alertVariant, setAlertVariant] = useState("");
+  const [alertVariant, setAlertVariant] = useState("success");
   const [isSummitSuccessful, setIsSummitSuccessful] = useState(false);
 
   const user_id = localStorage.getItem("user_id");
 
-  // fetch user data
+  // fetch user, employer data
   const [userData, setUserData] = useState({
     username: "",
     avatar: "",
     email: "",
   });
+  const fetchUserData = async (user_id) => {
+    request
+      .get(`/api/user/${user_id}`)
+      .then((res) => {
+        setUserData(res.data);
+      })
+      .catch((err) => {
+        console.log("Error fetching user data", err);
+      });
+  };
+
   useEffect(() => {
-    const fetchUserData = async (user_id) => {
-      request
-        .get(`/api/user/${user_id}`)
-        .then((res) => {
-          setUserData(res.data);
-        })
-        .catch((err) => {
-          console.log("Error fetching user data", err);
-        });
-    };
     fetchUserData(user_id);
     if (isSummitSuccessful) {
       setIsSummitSuccessful(false);
     }
   }, [user_id, isSummitSuccessful]);
-
-  const handleResetPassword = () => {
-    console.log("reset password");
-  };
 
   const handleUserChange = (event) => {
     setUserData({
@@ -46,45 +44,87 @@ const UpdateAccountAdmin = () => {
     });
   };
 
-  const handleUpdateUserSubmit = async (event) => {
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    try {
+      await request
+        .post("/api/auth/password-reset", {
+          email: userData?.email,
+        })
+        .then((res) => {
+          setAlertMessage(res.data.mes);
+          setAlertVariant("success");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 2000);
+        })
+        .catch((err) => {
+          console.log(err);
+          setAlertMessage("Error resetting password at server");
+          setAlertVariant("error");
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 2000);
+        });
+    } catch (error) {
+      setAlertMessage("Error resetting password at client");
+      setAlertVariant("error");
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000);
+    }
+  };
+
+  const handleAlert = (variant, mes) => {
+    setAlertMessage(mes);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000);
+  };
+
+  const handleUpdateAvatarSubmit = async (event) => {
     event.preventDefault();
     const insertData = new FormData();
     insertData.append("avatar", selectedFile);
-    insertData.append("username", userData.username);
     insertData.append("user_id", user_id);
-    insertData.append("email", userData.email);
     await request
       .put("/api/user", insertData, {
         headers: {
-          "Content-Type": "multipart/form-data", // Required for file uploads
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((res) => {
         console.log(res.data);
         setSelectedFile(null);
         setIsSummitSuccessful(true);
-        setAlertVariant("success");
-        setAlertMessage("Cập nhật tài khoản thành công");
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 2000);
+        handleAlert("success", "Cập nhật ảnh đại diện thành công");
+      });
+  };
+
+  const handleUpdateUserSubmit = async (event) => {
+    event.preventDefault();
+    await request
+      .put(`/api/user/${user_id}`, userData)
+      .then((res) => {
+        console.log(res.data);
+        setIsSummitSuccessful(true);
+        handleAlert("success", "Cập nhật tài khoản thành công");
       })
       .catch((err) => {
-        setAlertVariant("error");
-        setAlertMessage("Cập nhật tài khoản thất bại");
-        setShowAlert(true);
+        handleAlert("error", "error handleUpdateUserSubmit");
         console.log(err);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 2000);
       });
   };
 
   const navigate = useNavigate();
   const logout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate("/");
   };
   const handleConfirmDeleteAccount = async () => {
     // delete user
@@ -100,8 +140,8 @@ const UpdateAccountAdmin = () => {
       });
     } catch (error) {
       setAlertMessage("Error deleting user. Please try again.");
-      setShowAlert(true);
       setAlertVariant("error");
+      setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
       }, 2000);
@@ -112,24 +152,80 @@ const UpdateAccountAdmin = () => {
   const onFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
+
+  const SaveAndUpdateAI = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:5000/saveDataRecommend"
+      );
+      return response.data.message;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+  const handleSaveAndUpdateAI = async () => {
+    const message = await SaveAndUpdateAI();
+    if (message === "Data saved successfully") handleAlert("success", message);
+    else handleAlert("error", message);
+    console.log(message);
+  };
+
   return (
     <div className="container d-flex justify-content-center bg-light shadow-sm p-4 me-3 mb-5">
       {showAlert && (
         <AlertComponent message={alertMessage} variant={alertVariant} />
       )}
+      {/* 1.modal avatar */}
+      <div className="modal fade " id="modalChooseAvatar">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title fw-bold">Chọn avatar của bạn</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                data-bs-target="#modalChooseAvatar"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group d-flex flex-column">
+                <label htmlFor="avatar" className="form-label fw-bold">
+                  Avatar
+                </label>
+                <input
+                  type="file"
+                  className="form-select"
+                  onChange={onFileChange}
+                  name="avatar"
+                  id="avatar"
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary text-center mt-3"
+                  data-bs-dismiss="modal"
+                  onClick={handleUpdateAvatarSubmit}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="col col-9">
-        {/* <button onClick={handleCheck}>Check</button> */}
         <form onSubmit={handleUpdateUserSubmit}>
           <div className="row justify-content-between shadow p-3 mb-3">
+            <h4 className="ms-3 fw-bold">THÔNG TIN TÀI KHOẢN</h4>
             <div
-              className="col justify-content-center p-3 mb-3 d-flex flex-column"
+              className="col-12 justify-content-center p-3 mb-3 d-flex flex-column"
               style={{ alignItems: "center" }}
             >
               <img
                 src={
-                  userData.avatar
-                    ? userData.avatar
-                    : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  userData?.avatar ||
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                 }
                 alt="avatar"
                 style={{
@@ -141,60 +237,14 @@ const UpdateAccountAdmin = () => {
 
               <button
                 type="button"
-                className="btn btn-success mt-2 btn-sm"
+                className="btn btn-warning mt-2 btn-sm"
                 style={{ width: "110px" }}
                 data-bs-toggle="modal"
                 data-bs-target="#modalChooseAvatar"
               >
                 Thay avatar
               </button>
-              {selectedFile && (
-                <p className="mt-1">
-                  New avatar file: {selectedFile.name} <br />{" "}
-                  <strong>Click Cập nhật để đổi avatar</strong>
-                </p>
-              )}
-              {/* 1.modal avatar */}
-              <div className="modal fade " id="modalChooseAvatar">
-                <div className="modal-dialog modal-dialog-centered">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title fw-bold">
-                        Chọn avatar của bạn
-                      </h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        data-bs-target="#modalChooseAvatar"
-                      ></button>
-                    </div>
-                    <div className="modal-body">
-                      <div className="form-group d-flex flex-column">
-                        <label htmlFor="avatar" className="form-label fw-bold">
-                          Avatar
-                        </label>
-                        <input
-                          type="file"
-                          className="form-select"
-                          onChange={onFileChange}
-                          name="avatar"
-                          id="avatar"
-                        />
-                        <button
-                          type="button"
-                          className="btn btn-primary text-center mt-3"
-                          data-bs-dismiss="modal"
-                        >
-                          Chọn
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-            <h4 className="ms-3 fw-bold">THÔNG TIN TÀI KHOẢN</h4>
             <div className="col-5">
               <div>
                 <label htmlFor="username" className="form-label mt-3">
@@ -206,7 +256,7 @@ const UpdateAccountAdmin = () => {
                   id="username"
                   onChange={handleUserChange}
                   className="form-control form-control-sm"
-                  value={userData.username}
+                  value={userData?.username}
                   required
                 />
               </div>
@@ -222,9 +272,9 @@ const UpdateAccountAdmin = () => {
                   id="role_code"
                   className="form-control form-control-sm"
                   value={
-                    userData.role_code === "R1"
+                    userData?.role_code === "R1"
                       ? "Admin"
-                      : userData.role_code === "R2"
+                      : userData?.role_code === "R2"
                       ? "Nhà tuyển dụng"
                       : "Ứng viên"
                   }
@@ -243,7 +293,7 @@ const UpdateAccountAdmin = () => {
                   id="email"
                   onChange={handleUserChange}
                   className="form-control form-control-sm"
-                  value={userData.email}
+                  value={userData?.email}
                   required
                 />
               </div>
@@ -274,7 +324,6 @@ const UpdateAccountAdmin = () => {
                 Xóa tài khoản
               </button>
               {/* 2.modal confirm delete */}
-
               <div className="modal fade" id="modalConfirmDelete">
                 <div className="modal-dialog modal-dialog-centered">
                   <div className="modal-content">
@@ -323,6 +372,16 @@ const UpdateAccountAdmin = () => {
                 Cập nhật tài khoản
               </button>
             </div>
+          </div>
+          <div className="row justify-content-between shadow p-3 mb-3">
+            <h4 className="ms-3 fw-bold">Lưu và cập nhật AI</h4>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => handleSaveAndUpdateAI()}
+            >
+              Save and update AI data
+            </button>
           </div>
         </form>
       </div>

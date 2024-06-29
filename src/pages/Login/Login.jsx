@@ -2,18 +2,9 @@ import React, { useState } from "react";
 import "./style.css";
 import request from "../../configs/request.js";
 import { Link, useNavigate } from "react-router-dom";
+// import useAuth from "../../hooks/useAuth.jsx";
 import AlertComponent from "../../components/AlertComponent.jsx";
-import useAuth from "../../hooks/useAuth.jsx";
 function Login() {
-  const { setAuth } = useAuth();
-  const navigate = useNavigate();
-  // const location = useLocation();
-  // const from = location.state?.from?.pathname || "/";
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertVariant, setAlertVariant] = useState("");
@@ -23,8 +14,17 @@ function Login() {
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
-    }, 1000);
+    }, 2000);
   };
+  // const { setAuth } = useAuth();
+  const navigate = useNavigate();
+  // const location = useLocation();
+  // const from = location.state?.from?.pathname || "/";
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const handleChange = (event) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -44,14 +44,14 @@ function Login() {
         localStorage.setItem("username", res.data.username);
         localStorage.setItem("user_id", res.data.userId);
         localStorage.setItem("user_role", res.data.role_code);
-        const accessToken = res.data.access_token;
-        const roles = res.data.role_code;
-        const userName = res.data.username;
-        const userId = res.data.userId;
-        setAuth({ accessToken, roles, userName, userId });
+        // const accessToken = res.data.access_token;
+        // const roles = res.data.role_code;
+        // const userName = res.data.username;
+        // const userId = res.data.userId;
+        // setAuth({ accessToken, roles, userName, userId });
         handleAlert("success", res.data.mes);
         setTimeout(() => {
-          navigate("/", { state: { token: res.data.access_token } });
+          navigate(-1, { state: { token: res.data.access_token } });
           // window.location.reload();
         }, 1000);
       })

@@ -3,11 +3,10 @@ import { Link } from "react-router-dom";
 import request from "../../configs/request.js";
 import ReactPaginate from "react-paginate";
 
-const JobList = () => {
+const JobListAdmin = () => {
   const [data, setData] = useState([]);
   const [deleted, setDeleted] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
-  const user_id = localStorage.getItem("user_id");
   const formatDay = (unformattedDate) => {
     const dateObject = new Date(unformattedDate);
     // Extract components
@@ -21,10 +20,10 @@ const JobList = () => {
     return formattedDate;
   };
   const handlePageClick = (event) => {
-    fetchJobData(+event.selected + 1, user_id);
+    fetchJobData(+event.selected + 1);
   };
-  const fetchJobData = async (page = 1, user_id) => {
-    let urlRequest = `/api/job/list?page=${page}&limit=7&order[]=createdAt&order[]=DESC&user_id=${user_id}`;
+  const fetchJobData = async (page = 1) => {
+    let urlRequest = `/api/job?page=${page}&limit=7&order[]=createdAt&order[]=DESC`;
     await request
       .get(urlRequest)
       .then((res) => {
@@ -39,14 +38,13 @@ const JobList = () => {
     if (deleted) {
       setDeleted(false);
     }
-    fetchJobData(1, user_id);
-  }, [deleted, user_id]);
+    fetchJobData();
+  }, [deleted]);
 
   const handleDelete = (id) => {
     request
       .delete(`/api/job/${id}`)
       .then((res) => {
-        alert("success", "Delete job successfully");
         setDeleted(true);
       })
       .catch((err) => {
@@ -56,8 +54,8 @@ const JobList = () => {
 
   return (
     <div className="container">
-      <h3 className="text-center mt-3 fw-bold ">Job list</h3>
-      <div className="d-flex justify-content-end mt-3">
+      <h3 className="text-center mt-3 fw-bold ">All jobs list</h3>
+      <div className="d-flex justify-content-center mt-3">
         <div className=" w-100">
           <div className="table-responsive">
             <table className="table table-striped table-bordered">
@@ -136,4 +134,4 @@ const JobList = () => {
   );
 };
 
-export default JobList;
+export default JobListAdmin;

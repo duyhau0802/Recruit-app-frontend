@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import request from "../../configs/request";
-import { Link, useParams } from "react-router-dom";
-import formatDay from "../../utils/formatDay";
+import { useParams } from "react-router-dom";
 import JobItem from "../Home/JobItem.jsx";
 
 const EmployerDetail = () => {
@@ -49,11 +48,6 @@ const EmployerDetail = () => {
               <div className="row">Địa chỉ : {employer?.address_cong_ty}</div>
               <div className="row">
                 Tỉnh thành : {employer?.provinceData?.value}
-              </div>
-            </div>
-            <div className="col">
-              <div className="">
-                <Link className="btn btn-success btn-sm">Ưa thích</Link>
               </div>
             </div>
           </div>

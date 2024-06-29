@@ -4,8 +4,20 @@ import request from "../../configs/request";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate, useParams } from "react-router-dom";
+import AlertComponent from "../../components/AlertComponent.jsx";
 
 const UpdateJob = () => {
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertVariant, setAlertVariant] = useState("");
+  const handleAlert = (variant, mes) => {
+    setAlertMessage(mes);
+    setAlertVariant(variant);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000);
+  };
   const [formData, setFormData] = useState({});
   const { id } = useParams();
   useEffect(() => {
@@ -115,18 +127,25 @@ const UpdateJob = () => {
     request
       .put(`/api/job/${id}`, formData)
       .then((res) => {
-        setTimeout(() => {
-          alert("Cập nhật công việc thành công");
-          navigate(-1);
-        }, 200);
+        if (res.data[0] === 1) {
+          handleAlert("success", "Cập nhật công việc thành công");
+          setTimeout(() => {
+            navigate(-1);
+          }, 2000);
+        } else {
+          handleAlert("error", "Cập nhật công việc thất bại");
+          console.log(res.data);
+        }
       })
       .catch((err) => {
         console.log(err);
-        alert("Something went wrong");
       });
   };
   return (
     <div className="container d-flex justify-content-center bg-light shadow-sm p-4 me-3 mb-5">
+      {showAlert && (
+        <AlertComponent variant={alertVariant} message={alertMessage} />
+      )}
       <div className="col col-8">
         <form onSubmit={handleSubmit}>
           <h4 className="ms-3 fw-bold">THÔNG TIN CÔNG VIỆC</h4>
@@ -153,6 +172,7 @@ const UpdateJob = () => {
                 </label>
                 <input
                   type="number"
+                  min="1"
                   name="so_luong"
                   id="so_luong"
                   onChange={handleChange}

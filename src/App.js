@@ -10,6 +10,7 @@ import Register from "./pages/Register/Register.jsx";
 import RegisterEmployer from "./pages/Register/RegisterEmployer.jsx";
 import Layout from "./components/Layout.jsx";
 import EmployerDetail from "./pages/Employer/EmployerDetail.jsx";
+import ApplicantDetail from "./pages/Applicant/ApplicantDetail.jsx";
 import Unauthorized from "./components/Unauthorized.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import DashBoardRoutes from "./routes/DashBoardRoutes.jsx";
@@ -32,6 +33,7 @@ function App() {
         <Route path="/register-employer" element={<RegisterEmployer />} />
         <Route path="/job/:id" element={<JobDetail />} />
         <Route path="/employer/:id" element={<EmployerDetail />} />
+        <Route path="/applicant/:id" element={<ApplicantDetail />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         {/* protect routes*/}
         <Route

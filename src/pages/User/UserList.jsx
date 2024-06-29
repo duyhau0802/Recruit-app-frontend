@@ -68,6 +68,7 @@ const UserList = () => {
                             item?.avatar ||
                             "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                           }
+                          alt="avatar"
                           style={{
                             width: "50px",
                             height: "50px",

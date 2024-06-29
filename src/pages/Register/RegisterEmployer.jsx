@@ -49,13 +49,12 @@ function RegisterEmployer() {
             handleAlert("success", "Register successfully");
             navigate("/");
           }, 3000);
-        }
-        if (res.data.err === 1) {
-          alert(res.data.mes);
+        } else if (res.data.err === 1) {
+          handleAlert("error", res.data.mes);
         }
       })
       .catch((err) => {
-        alert(err);
+        // handleAlert("error", err);
         console.log(err);
       });
   };

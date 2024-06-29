@@ -230,7 +230,7 @@ const UpdateAccountApplicant = () => {
       .then((res) => {
         console.log(res.data);
         setIsSummitSuccessful(true);
-        setAlertMessage("Cập nhật thông tin chi tiết");
+        setAlertMessage("Cập nhật thông tin thành công");
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
@@ -238,7 +238,7 @@ const UpdateAccountApplicant = () => {
       })
       .catch((err) => {
         console.error(err);
-        setAlertMessage("Xảy ra lỗi khi cập nhật thông tin chi tiết.");
+        setAlertMessage("Đã xảy ra lỗi khi cập nhật thông tin.");
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
@@ -248,7 +248,7 @@ const UpdateAccountApplicant = () => {
   const navigate = useNavigate();
   const logout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate("/");
   };
   const handleConfirmDeleteAccount = async () => {
     // delete user
@@ -277,9 +277,9 @@ const UpdateAccountApplicant = () => {
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleCheck = (e) => {
-    console.log(userData);
-  };
+  // const handleCheck = (e) => {
+  //   console.log(userData);
+  // };
   return (
     <div className="container d-flex justify-content-center bg-light shadow-sm p-4 me-3 mb-5">
       {showAlert && (
